@@ -104,20 +104,21 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .footnote-sound i:nth-child(4) { height: 19px; animation-delay: .6s; }
 @keyframes equalize { to { height: 3px; opacity: .5; } }
 .hero-side-note { position: absolute; right: 16px; top: 50%; writing-mode: vertical-rl; font: 9px 'DM Mono', monospace; letter-spacing: .2em; color: #716572; }
-.sculpture { width: 100%; min-height: 480px; height: 100%; position: relative; display: grid; place-items: center; perspective: 1000px; }
-.sculpture-glow { position: absolute; width: 85%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle,rgba(190,122,111,.25),rgba(151,86,125,.08) 50%,transparent 75%); filter: blur(20px); }
-.sculpture-orbit { position: absolute; border: 1px solid rgba(242,183,150,.18); border-radius: 50%; width: 78%; aspect-ratio: 1; transform: rotateX(58deg) rotate(-32deg); }
-.sculpture-orbit-one { animation: orbit 28s linear infinite; }
-.sculpture-orbit-two { width: 95%; transform: rotateY(58deg) rotate(20deg); border-color: rgba(235,186,156,.12); animation: orbit 42s linear infinite reverse; }
+.sculpture { width: 100%; min-height: 480px; height: 100%; position: relative; display: grid; place-items: center; perspective: 1000px; overflow: hidden; }
+.sculpture-glow { position: absolute; width: 82%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle,rgba(190,122,111,.28),rgba(151,86,125,.09) 48%,transparent 73%); filter: blur(18px); }
+.sculpture-static-backdrop { position:absolute; inset:0; background: radial-gradient(circle at 54% 48%, rgba(255,205,138,.06), transparent 30%), radial-gradient(circle at 52% 50%, rgba(190,122,111,.12), transparent 46%); z-index:1; }
+.sculpture-orbit { display:none; }
+.sculpture-orbit-one { display:none; }
+.sculpture-orbit-two { display:none; }
 @keyframes orbit { to { rotate: 360deg; } }
-.sculpture-inner { width: 100%; height: 100%; max-height: 620px; display: grid; place-items: center; transform: rotateY(var(--mx, 0deg)) rotateX(var(--my, 0deg)); transition: transform .3s ease-out; transform-style: preserve-3d; }
-.sculpture-disc { position: absolute; width: 42%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 37% 30%,#483043,#201b27 62%,#100f15 75%); border: 1px solid #a27876; box-shadow: inset 0 0 0 18px rgba(180,129,115,.035), inset 0 0 0 19px rgba(233,184,147,.16),0 24px 100px #100b1a; transform: rotate(-20deg) translateZ(-30px); display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.sculpture-disc::before { content: ''; position: absolute; inset: 13px; border: 1px dashed rgba(240,180,147,.2); border-radius: 50%; }
-.sculpture-disc > span { color: #d6b098; font-size: clamp(10px,1.7vw,17px); letter-spacing: .18em; font-weight: 800; }
+.sculpture-inner { width: 100%; height: 100%; max-height: 620px; display: grid; place-items: center; transform: rotateY(var(--mx, 0deg)) rotateX(var(--my, 0deg)); transition: transform .3s ease-out; transform-style: preserve-3d; position:relative; z-index:3; }
+.sculpture-disc { position: absolute; width: 39%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 37% 30%,#4a3145,#231c2c 60%,#110f18 74%); border: 1px solid rgba(220,178,150,.46); box-shadow: inset 0 0 0 18px rgba(180,129,115,.04), inset 0 0 0 19px rgba(233,184,147,.18),0 18px 72px rgba(16,11,26,.78); transform: translateY(-18px) translateZ(-30px); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.sculpture-disc::before { content: ''; position: absolute; inset: 13px; border: 1px solid rgba(240,180,147,.18); border-radius: 50%; }
+.sculpture-disc > span { color: #f0c8a7; font-size: clamp(12px,1.9vw,18px); letter-spacing: .14em; font-weight: 800; }
 .sculpture-disc small { color: #9f8794; font: 8px 'DM Mono', monospace; margin-top: 10px; text-transform: uppercase; }
-.sculpture-disc i { font-style: normal; color: #e7aa82; font-size: 28px; margin-top: 18px; }
-.wave-art { position: relative; width: 122%; max-width: none; height: auto; filter: drop-shadow(0 14px 14px rgba(15,7,24,.65)); transform: translateZ(70px) rotate(-16deg); animation: pulse-wave 9s ease-in-out infinite; }
-@keyframes pulse-wave { 50% { transform: translateZ(80px) rotate(-13deg) scale(1.04); } }
+.sculpture-disc i { font-style: normal; color: #efb38e; font-size: 26px; margin-top: 15px; opacity: .9; }
+.wave-art { position: relative; width: 118%; max-width: none; height: auto; filter: drop-shadow(0 14px 14px rgba(15,7,24,.65)); transform: translateZ(70px) rotate(-10deg) translateY(-6px); animation: pulse-wave 9s ease-in-out infinite; }
+@keyframes pulse-wave { 50% { transform: translateZ(80px) rotate(-8deg) translateY(-10px) scale(1.03); } }
 .sculpture-corner { position: absolute; font: 9px 'DM Mono', monospace; letter-spacing: .14em; color: #af8c8f; }
 .sculpture-corner.top { top: 7%; left: 14%; }
 .sculpture-corner.bottom { bottom: 9%; right: 12%; }
@@ -768,3 +769,152 @@ input:focus,select:focus,textarea:focus { outline: none; border-color: #b8725b; 
   .sculpture { min-height: 330px; }
 }
 .audio-status-label { color: #827683; font-size: 10px; }
+
+/* SONORUM V4: arte vetorial, contraste, cabeçalho da aula e perfil */
+.sonorum-three-layer { position:absolute; inset:0; z-index:2; pointer-events:none; overflow:hidden; }
+.sonorum-three-layer canvas { display:block; width:100%; height:100%; }
+.sculpture-inner { position:relative; z-index:3; pointer-events:none; }
+.learn-instrument-grid .instrument-photo-card { min-height:300px; }
+.instrument-photo-card .instrument-card-image { object-position:center center; object-fit:contain; width:100%; height:100%; transform:none; filter:none; }
+.instrument-photo-card:hover .instrument-card-image,.instrument-photo-card:focus-visible .instrument-card-image { transform:scale(1.015); filter:none; }
+.instrument-card-shade { background:linear-gradient(180deg,rgba(23,19,32,.16) 0%, transparent 42%,rgba(25,17,30,.72) 78%,#201928 98%); }
+.learn-detail-cover { object-fit:contain; object-position:right center; right:1%; width:59%; height:100%; filter:none; }
+.learn-detail-hero::before { background:linear-gradient(90deg,#251c2d 15%,#2a2133 47%,rgba(38,27,44,.32) 83%,rgba(38,27,44,.10)); }
+/* A faixa ocupa toda a largura: não fica mais presa ao padding do artigo. */
+.learn-detail-workspace .lesson-content-card { padding:0 30px 30px; overflow:hidden; }
+.lesson-cover-strip { width:calc(100% + 60px); margin:0 -30px 25px; border-radius:10px 10px 0 0; min-height:148px; }
+.lesson-cover-strip > img { object-fit:contain; object-position:right center; width:74%; left:auto; right:0; opacity:.83; filter:none; }
+.lesson-cover-strip::before { background:linear-gradient(90deg,#251b30 5%,#251b30e6 48%,#251b3042 100%); }
+.lesson-cover-strip > div { padding:22px 29px; }
+.lesson-cover-strip span { color:#fff0e9; font-weight:700; }
+.lesson-practice-reference { background:#faf4f2; border:1px solid #e9d9d9; border-radius:10px; padding:16px 18px; }
+.lesson-practice-reference > span { display:block; font-weight:800; color:#653447; letter-spacing:.09em; font-size:11px; }
+.lesson-practice-reference .diagram-pre { color:#352737; background:#fff; border:1px solid #e6dedd; font-size:13px; margin:12px 0 0; }
+.lesson-objective span { color:#713f53; font-weight:800; }
+.lesson-sound-disclaimer { color:#655865; }
+.sonorum-less-motion *, .sonorum-less-motion *::before, .sonorum-less-motion *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+.sonorum-compact-lessons .learn-detail-workspace .lesson-item { min-height:48px; padding:6px 10px; }
+.account-menu-wrap { position:relative; }
+.account-chip { cursor:pointer; border:1px solid #ffffff28; }
+.account-chip:hover { background:#ffffff24; }
+.account-chevron { padding:0 8px 4px 2px; font-size:18px; color:#d2bac9; }
+.account-dropdown { position:absolute; right:0; top:calc(100% + 13px); min-width:245px; background:#261d2d; border:1px solid #60465d; border-radius:14px; box-shadow:0 18px 50px #110c18b8; padding:8px; color:#fff; z-index:80; }
+.account-dropdown-heading { display:flex; flex-direction:column; padding:12px 14px 15px; border-bottom:1px solid #ffffff1d; margin-bottom:5px; }
+.account-dropdown-heading strong { font-size:13px; }
+.account-dropdown-heading small { color:#c5b2c3; font-size:11px; overflow:hidden; text-overflow:ellipsis; }
+.account-dropdown button { display:flex; gap:13px; align-items:center; width:100%; padding:12px 13px; background:transparent; color:#fff3ef; border:0; border-radius:8px; text-align:left; font-size:13px; }
+.account-dropdown button:hover { background:#ffffff16; }
+.account-dropdown .account-dropdown-exit { color:#ffc7b4; border-top:1px solid #ffffff14; border-radius:0 0 8px 8px; margin-top:5px; }
+.account-page { padding-bottom:110px; }
+.account-heading { margin:0 0 38px; }
+.account-heading h1 { font-size:clamp(38px,5vw,67px); letter-spacing:-.06em; margin:8px 0; line-height:1.1; }
+.account-heading h1 em { font-family:'Instrument Serif',Georgia,serif; font-weight:400; color:#9e5675; }
+.account-heading p { font-size:14px; color:#706675; }
+.account-layout { display:grid; grid-template-columns:275px minmax(0,1fr); gap:24px; align-items:start; }
+.account-side-nav { padding:15px; background:#fff; border:1px solid #e5dcd9; border-radius:14px; }
+.account-side-identity { display:flex; flex-direction:column; gap:5px; align-items:center; text-align:center; padding:25px 6px; margin-bottom:12px; border-bottom:1px solid #eee7e5; }
+.account-avatar-large { width:78px; height:78px; display:grid; place-items:center; background:linear-gradient(145deg,#b16881,#50344f); color:#fff; border-radius:50%; font-size:34px; font-weight:700; margin-bottom:8px; }
+.account-side-identity strong { font-size:17px; }
+.account-side-identity small { color:#8f7a83; }
+.account-side-nav button { width:100%; display:flex; gap:12px; align-items:center; background:transparent; border:0; border-radius:9px; padding:14px 16px; font-size:13px; font-weight:700; color:#4e4450; text-align:left; }
+.account-side-nav button:hover,.account-side-nav button.selected { background:#f1e6ec; color:#643650; }
+.account-side-nav button.account-exit { margin-top:18px; border-top:1px solid #f2e6e8; color:#9f485a; }
+.account-content { background:#fff; border:1px solid #e5dcd9; border-radius:14px; padding:clamp(22px,4vw,46px); min-height:450px; }
+.account-caption { font:700 10px 'DM Mono',monospace; letter-spacing:.16em; color:#894963; }
+.account-content h2 { font-size:32px; letter-spacing:-.04em; margin:10px 0 14px; }
+.account-content > p { max-width:610px; font-size:13px; color:#6f6670; line-height:1.7; }
+.account-form { max-width:510px; display:flex; flex-direction:column; gap:9px; margin-top:29px; }
+.account-form label { font-weight:700; font-size:12px; margin-top:11px; }
+.account-form input { width:100%; padding:13px 15px; border:1px solid #d5cbd2; background:#fff; border-radius:8px; color:#312536; }
+.account-form input[readonly] { background:#f7f4f5; color:#736874; }
+.account-form small { color:#766d76; font-size:11px; }
+.account-form .btn { align-self:flex-start; margin-top:18px; }
+.account-message { padding:12px 14px; background:#eee6ec; color:#58364b !important; border-radius:8px; margin-top:22px; }
+.account-pref-row { max-width:680px; border-bottom:1px solid #ece5e9; display:flex; justify-content:space-between; gap:22px; align-items:center; padding:23px 0; }
+.account-pref-row div { display:flex; flex-direction:column; gap:6px; }
+.account-pref-row strong { font-size:14px; }
+.account-pref-row small { font-size:12px; color:#82727e; line-height:1.6; }
+.account-pref-row input[type=checkbox] { accent-color:#834667; width:22px; height:22px; flex:0 0 22px; cursor:pointer; }
+.account-local-note { margin-top:25px; }
+@media(max-width:740px) {
+ .learn-detail-workspace .lesson-content-card { padding:0 20px 24px; }
+ .lesson-cover-strip { width:calc(100% + 40px); margin:0 -20px 23px; }
+ .lesson-cover-strip > div { padding:20px; }
+ .learn-detail-cover { width:100%; opacity:.54; }
+ .account-layout { grid-template-columns:1fr; }
+ .account-side-nav { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+ .account-side-identity { grid-column:1/-1; padding:13px; }
+ .account-side-nav button { padding:11px 8px; font-size:11px; }
+ .account-content { min-height:340px; }
+}
+@media(prefers-reduced-motion:reduce) { .sonorum-three-layer { display:none; } }
+
+/* SONORUM V4.1: Beethoven acompanha a seção abaixo da primeira dobra.
+   Hero volta à escultura abstrata original (incluindo Three.js). */
+.home-intro {
+  grid-template-columns: minmax(290px, 38%) minmax(0, 1fr);
+  gap: clamp(38px, 5vw, 82px);
+  align-items: center;
+  padding-top: clamp(84px, 9vw, 124px);
+  padding-bottom: clamp(92px, 9vw, 140px);
+}
+.intro-beethoven-portrait {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  min-height: 460px;
+  aspect-ratio: 4 / 5;
+  isolation: isolate;
+  border-radius: 8px 72px 8px 8px;
+  overflow: hidden;
+  background: #281a36;
+  box-shadow: 0 24px 55px rgba(30, 20, 44, .18);
+}
+.intro-beethoven-portrait::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border: 1px solid rgba(242, 208, 184, .35);
+  border-radius: inherit;
+}
+.intro-beethoven-portrait::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 23%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(transparent, rgba(34, 20, 46, .3));
+}
+.intro-beethoven-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  object-position: 50% 38%;
+}
+.intro-portrait-glow {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  width: 70%;
+  height: 2px;
+  left: 15%;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, #efb08f, transparent);
+}
+@media (max-width: 960px) {
+  .home-intro { grid-template-columns: minmax(240px, 35%) minmax(0, 1fr); gap: 36px; }
+  .intro-beethoven-portrait { min-height: 390px; }
+}
+@media (max-width: 700px) {
+  .home-intro { grid-template-columns: minmax(0, 1fr); gap: 36px; padding: 70px 24px 80px; }
+  .intro-beethoven-portrait { min-height: 0; max-height: 380px; aspect-ratio: 5 / 4; border-radius: 8px 46px 8px 8px; }
+  .intro-beethoven-portrait img { object-position: 50% 36%; }
+}

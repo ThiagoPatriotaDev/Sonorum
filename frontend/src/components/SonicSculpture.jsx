@@ -18,10 +18,9 @@ export default function SonicSculpture({ compact = false }) {
         setMove({ x: ((e.clientX - box.left) / box.width - 0.5) * 9, y: ((e.clientY - box.top) / box.height - 0.5) * -9 });
       }}
       onPointerLeave={() => setMove({ x: 0, y: 0 })}
-      role="img" aria-label="Escultura abstrata de ondas sonoras douradas e coral, com anéis tridimensionais">
+      role="img" aria-label="Escultura abstrata de ondas sonoras e anéis tridimensionais">
       <div className="sculpture-glow" />
-      <div className="sculpture-orbit sculpture-orbit-one" />
-      <div className="sculpture-orbit sculpture-orbit-two" />
+      <div className="sculpture-static-backdrop" aria-hidden="true" />
       <div className="sculpture-inner" style={{ '--mx': `${move.x}deg`, '--my': `${move.y}deg` }}>
         <div className="sculpture-disc"><span>SONORUM</span><i>♫</i></div>
         <svg className="wave-art" viewBox="0 0 600 460" fill="none" aria-hidden="true">

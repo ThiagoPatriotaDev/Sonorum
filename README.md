@@ -1,3 +1,5 @@
+> **Sonorum Studio V4.** Alterações de navegação, imagens e perfil em `docs/ALTERACOES_V4.md`. O frontend passou a usar a dependência `three` e deve receber `npm install` antes de executar.
+
 # SONORUM V3 | Portal de Música + Studio de Partituras
 
 Esta edição do Sonorum reúne quatro áreas: **Início, Explorar aulas, Comunidade e Partituras**. O visual da home foi simplificado, a escolha de instrumento agora abre uma tela exclusiva e a antiga divisão entre biblioteca e estúdio foi substituída por um único ambiente de criação.
@@ -98,3 +100,7 @@ Sonorum/
 - Armazenamento local e exportação MusicXML testados com notas e pausas.
 
 **Não foi possível concluir `npm ci` nem uma validação interativa do Vite neste ambiente**, porque a instalação de dependências do registro npm não concluiu. Ao executar na sua máquina, teste primeiro `Partituras → Nova partitura → Inserir nota → Salvar → Recentes → Abrir` e `Explorar aulas → Violino → Videoaulas → Voltar`.
+
+## Ajuste V4.1
+
+O retrato de Beethoven foi reposicionado para a seção **“Mais que estudar música”**, abaixo da primeira dobra. A escultura abstrata original foi restaurada na área inicial. Detalhes em [`docs/ALTERACOES_V4_1.md`](docs/ALTERACOES_V4_1.md).

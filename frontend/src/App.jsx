@@ -6,6 +6,7 @@ import ScoreEditorPage from './pages/ScoreEditorPage.jsx';
 import ScoreWorkspacePage from './pages/ScoreWorkspacePage.jsx';
 import CommunityPage from './pages/CommunityPage.jsx';
 import AuthModal from './components/AuthModal.jsx';
+import AccountPage from './pages/AccountPage.jsx';
 import { StorageService } from './services/storageService.js';
 import { CommunityApi } from './services/communityApi.js';
 import { INITIAL_INSTRUMENTS } from './data/instruments.js';
@@ -24,6 +25,15 @@ export default function App() {
   const [authError, setAuthError] = useState('');
   const [videos, setVideos] = useState([]);
   const [videoError, setVideoError] = useState('');
+  const [accountSection, setAccountSection] = useState('perfil');
+
+  useEffect(() => {
+    try {
+      const preferences = JSON.parse(localStorage.getItem('sonorum_preferences_v4') || '{}');
+      document.documentElement.classList.toggle('sonorum-less-motion', Boolean(preferences.reduceMotion));
+      document.documentElement.classList.toggle('sonorum-compact-lessons', Boolean(preferences.compactLessons));
+    } catch { /* preferências locais inválidas não devem interromper o portal */ }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -84,6 +94,12 @@ export default function App() {
       setAuthError('');
     } catch (error) { setAuthError(error.message); throw error; }
   };
+  const handleOpenAccount = (section = 'perfil') => { setAccountSection(section); setActiveTab('conta'); scrollToTop(); };
+  const handleUpdateProfile = async (name) => {
+    const result = await CommunityApi.updateMe({ name }, CommunityApi.getToken());
+    setUser(result.user);
+    return result.user;
+  };
   const handleSignOut = () => {
     CommunityApi.clearToken(); setUser(null); setScores(StorageService.getScores()); setAuthError(''); changeTab('inicio');
   };
@@ -98,8 +114,9 @@ export default function App() {
   const openAuth = () => { setAuthError(''); setAuthVisible(true); };
 
   return <div className="site-root">
-    <Header activeTab={activeTab} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} />
+    <Header activeTab={activeTab} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
     <main className={activeTab === 'inicio' ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
+      {activeTab === 'conta' && <AccountPage user={user} activeSection={accountSection} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut} />}
       {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} />}
       {activeTab === 'ensino' && <InstrumentsPage instruments={INITIAL_INSTRUMENTS} selectedInstrument={selectedInstrument} onSelectedInstrumentChange={setSelectedInstrument} videos={videos} completedLessons={completedLessons} onToggleLesson={handleToggleLesson} onPracticeInEditor={handlePracticeInEditor} onVisitCommunity={()=>changeTab('comunidade')} />}
       {activeTab === 'comunidade' && <><CommunityPage videos={videos} user={user} onOpenAuth={openAuth} onPublish={handlePublish} onDelete={handleDeleteVideo} error={videoError} onClearError={()=>setVideoError('')} />{videoError && <p className="server-warning" role="status">{videoError}</p>}</>}

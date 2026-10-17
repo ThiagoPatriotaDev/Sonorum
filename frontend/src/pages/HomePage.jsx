@@ -25,7 +25,10 @@ export default function HomePage({ onNavigate, onChooseInstrument }) {
         <button type="button" className="hero-scroll-cue" aria-label="Rolar para conhecer o curso" onClick={() => document.getElementById('sobre-curso')?.scrollIntoView({behavior:'smooth'})}><span>DESCUBRA MAIS</span><span className="hero-scroll-arrow" aria-hidden="true">↓</span></button>
       </section>
       <section className="home-intro" id="sobre-curso">
-        <div className="intro-side"><div className="intro-seal" aria-hidden="true">𝄞</div></div>
+        <figure className="intro-beethoven-portrait">
+          <img src="/images/beethoven-art.webp" alt="Retrato artístico de Ludwig van Beethoven em tons violetas, acompanhado de partituras e notas musicais" loading="lazy" decoding="async" />
+          <span className="intro-portrait-glow" aria-hidden="true" />
+        </figure>
         <div className="intro-main"><div className="section-kicker">BEM-VINDO AO SONORUM</div><h2>Mais que estudar música.<br /><em>Fazer parte dela.</em></h2><p>Um portal para conhecer a formação musical e um espaço de aprendizagem contínua. Explore instrumentos, assista a aulas compartilhadas por estudantes e professores e escreva suas próprias composições.</p><div className="intro-split"><div><strong>Conheça o curso</strong><p>Entenda as possibilidades de formação, a rotina de estudos e como buscar informações oficiais de ingresso.</p></div><div><strong>Aprenda fazendo</strong><p>Experimente exercícios, ouça exemplos e pratique no estúdio de partituras.</p></div></div></div>
       </section>
       <section className="instrument-feature">

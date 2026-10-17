@@ -61,3 +61,18 @@ export function login(req, res) {
   authFailures.delete(key);
   res.json({ user: safeUser(user), token: issueToken(user) });
 }
+
+export function updateProfile(req, res) {
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim().replace(/\s+/g,' ') : '';
+  if (name.length < 2 || name.length > 90) return res.status(400).json({ error: 'O nome precisa ter entre 2 e 90 caracteres.' });
+  communityStore.write(state => {
+    const user = state.users.find(item => item.id === req.user.id);
+    if (user) user.name = name;
+    for (const video of state.videos) {
+      if (video.authorId === req.user.id) video.author = name;
+    }
+  });
+  const updated = communityStore.read().users.find(item=>item.id === req.user.id);
+  if (!updated) return res.status(404).json({ error: 'Conta não encontrada.' });
+  res.json({ user: safeUser(updated) });
+}

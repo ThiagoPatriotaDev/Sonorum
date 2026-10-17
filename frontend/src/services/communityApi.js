@@ -21,6 +21,7 @@ export const CommunityApi = {
   saveToken: (token) => localStorage.setItem(TOKEN_KEY, token),
   clearToken: () => localStorage.removeItem(TOKEN_KEY),
   me: (token) => request('/auth/me', { token }),
+  updateMe: (data, token) => request('/auth/me', { method: 'PATCH', body: data, token }),
   register: (data) => request('/auth/register', { method: 'POST', body: data }),
   login: (data) => request('/auth/login', { method: 'POST', body: data }),
   videos: (instrumentId = '') => request(`/videos${instrumentId ? `?instrument=${encodeURIComponent(instrumentId)}` : ''}`),
