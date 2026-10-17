@@ -25,7 +25,21 @@ export default function InstrumentsPage({ instruments, selectedInstrument, onSel
             <div className="instrument-top"><span className="instrument-no">0{index + 1} / 04</span><span className="instrument-tag">{inst.category}</span></div>
             <div className="instrument-illustration"><span className="instrument-emoji">{inst.emoji}</span><span className="instrument-echo" aria-hidden="true">{ILLUSTRATIONS[inst.id]}</span></div>
             <div className="instrument-bottom"><div className="instrument-name">{inst.name}</div><span className="instrument-go">↗</span></div>
-            <div className="instrument-desc">{inst.description}</div><div className="progress-meta"><span>{done ? `${done} aula${done > 1 ? 's' : ''} concluída${done > 1 ? 's' : ''}` : 'Sua jornada começa aqui'}</span><span>{pct}%</span></div><div className="progress-track"><div className="progress-fill" style={{ width: `${pct}%` }} /></div>
+            <div className="instrument-desc">{inst.description}</div>
+            <div className="progress-meta">
+              <span>{done ? `${done} aula${done > 1 ? 's' : ''} concluída${done > 1 ? 's' : ''}` : 'Sua jornada começa aqui'}</span>
+              <span>{pct}%</span>
+            </div>
+            <div
+              className="progress-track"
+              role="progressbar"
+              aria-label={`Progresso em ${inst.name}`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={pct}
+            >
+              <div className="progress-fill" style={{ width: `${pct}%` }} />
+            </div>
           </button>;
         })}
       </div>
