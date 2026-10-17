@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import StaffCanvas from '../components/StaffCanvas.jsx';
 import { AudioEngine } from '../services/audioEngine.js';
 import { exportScoreAsJSON } from '../utils/exportUtils.js';
+import { downloadMusicXml } from '../utils/musicXml.js';
 
 export default function MyScoresPage({ scores, onEditScore, onDeleteScore, onNewScore }) {
   const [search, setSearch] = useState('');
@@ -17,7 +18,8 @@ export default function MyScoresPage({ scores, onEditScore, onDeleteScore, onNew
   });
 
   return (
-    <section>
+    <section className="library-page">
+      <div className="editor-masthead"><span className="section-index">SONORUM / MINHA BIBLIOTECA</span><span className="studio-flourish">ARQUIVO PESSOAL</span></div>
       <div className="section-header">
         <div>
           <h1 className="section-title">Minhas Partituras Salvas</h1>
@@ -51,6 +53,7 @@ export default function MyScoresPage({ scores, onEditScore, onDeleteScore, onNew
       </div>
 
       <div className="scores-grid">
+        {filtered.length === 0 && <div className="library-empty"><span>♫</span><h3>{scores.length ? 'Nenhuma composição encontrada.' : 'Uma biblioteca inteira para começar.'}</h3><p>{scores.length ? 'Tente outro termo ou instrumento.' : 'Suas partituras salvas neste navegador aparecerão aqui.'}</p><button className="btn btn-primary" onClick={onNewScore}>Criar minha primeira partitura ↗</button></div>}
         {filtered.map((score) => (
           <article key={score.id} className="score-card">
             <div className="score-card-header">
@@ -80,9 +83,8 @@ export default function MyScoresPage({ scores, onEditScore, onDeleteScore, onNew
               <button className="btn btn-primary btn-sm" onClick={() => onEditScore(score)}>
                 ✏️ Editar
               </button>
-              <button className="btn btn-secondary btn-sm" onClick={() => exportScoreAsJSON(score)}>
-                ⬇ Baixar JSON
-              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => downloadMusicXml(score)}>↓ MusicXML</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => exportScoreAsJSON(score)}>↓ JSON</button>
               <button className="btn btn-secondary btn-sm" onClick={() => window.print()}>
                 🖨 Imprimir
               </button>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import StaffCanvas from '../components/StaffCanvas.jsx';
+import MusicXmlPreview from '../components/MusicXmlPreview.jsx';
+import { downloadMusicXml } from '../utils/musicXml.js';
 import { PITCH_CATALOG, DURATION_OPTIONS } from '../constants/musicCatalog.js';
 import { AudioEngine } from '../services/audioEngine.js';
 
@@ -24,6 +26,7 @@ export default function ScoreEditorPage({ initialScore, onSaveScore, onResetNew 
   const [currentDuration, setCurrentDuration] = useState(1);
   const [isSharp, setIsSharp] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
+  const [viewMode, setViewMode] = useState('edit');
 
   const handleAddPitch = (basePitchId) => {
     if (currentDuration === 'rest') {
@@ -62,20 +65,24 @@ export default function ScoreEditorPage({ initialScore, onSaveScore, onResetNew 
     });
   };
 
+  const scoreForExport = { title, author, instrument, tempo, meter, notes };
+
   return (
-    <section>
+    <section className="editor-page">
+      <div className="editor-masthead"><span className="section-index">SONORUM / ESTÚDIO DE CRIAÇÃO</span><span className="studio-flourish">♪ COMPOSIÇÃO LIVRE</span></div>
       <div className="section-header">
         <div>
           <h1 className="section-title">
-            {initialScore?.id ? `Editando: ${initialScore.title}` : 'Desenvolver Nova Partitura'}
+            {initialScore?.id ? `Editando: ${initialScore.title}` : 'Dê forma ao seu som.'}
           </h1>
           <p className="section-subtitle">
             Clique nas linhas/espaços da pauta ou nos botões rápidos para compor sua partitura.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-secondary" onClick={onResetNew}>📄 Nova em Branco</button>
-          <button className="btn btn-primary" onClick={handleSave}>💾 Salvar Partitura</button>
+        <div className="editor-top-actions">
+          <button className="btn btn-secondary" onClick={onResetNew}>+ Nova partitura</button>
+          <button className="btn btn-secondary" onClick={() => downloadMusicXml(scoreForExport)}>↓ Exportar MusicXML</button>
+          <button className="btn btn-primary" onClick={handleSave}>Salvar composição ↗</button>
         </div>
       </div>
 
@@ -168,7 +175,8 @@ export default function ScoreEditorPage({ initialScore, onSaveScore, onResetNew 
           </div>
         </div>
 
-        <div className="staff-container">
+        <div className="editor-view-switch"><button className={viewMode === 'edit' ? 'active' : ''} onClick={() => setViewMode('edit')}>Editar notas</button><button className={viewMode === 'preview' ? 'active' : ''} onClick={() => setViewMode('preview')}>Visualização profissional ✳</button></div>
+        {viewMode === 'edit' ? <div className="staff-container">
           <StaffCanvas
             notes={notes}
             meter={meter}
@@ -177,7 +185,7 @@ export default function ScoreEditorPage({ initialScore, onSaveScore, onResetNew 
             onAddPitch={handleAddPitch}
             onRemoveNote={handleRemoveNote}
           />
-        </div>
+        </div> : <MusicXmlPreview score={scoreForExport} />}
 
         <div style={{ marginTop: '1rem' }}>
           <label>Anotações de Estudo / Cifras</label>

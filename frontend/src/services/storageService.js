@@ -38,28 +38,31 @@ const DEFAULT_SCORES = [
 ];
 
 export const StorageService = {
-  getScores() {
+  getScores(userId = null) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.SCORES);
+      const key = userId ? `${STORAGE_KEYS.SCORES}_user_${userId}` : STORAGE_KEYS.SCORES;
+      const raw = localStorage.getItem(key);
       if (!raw) {
-        localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(DEFAULT_SCORES));
-        return DEFAULT_SCORES;
+        localStorage.setItem(key, JSON.stringify(userId ? [] : DEFAULT_SCORES));
+        return userId ? [] : DEFAULT_SCORES;
       }
       return JSON.parse(raw);
     } catch {
-      return DEFAULT_SCORES;
+      return userId ? [] : DEFAULT_SCORES;
     }
   },
 
-  saveScore(scorePayload) {
-    const scores = this.getScores();
+  saveScore(scorePayload, userId) {
+    if (!userId) throw new Error('Faça login para salvar partituras.');
+    const key = `${STORAGE_KEYS.SCORES}_user_${userId}`;
+    const scores = this.getScores(userId);
     const nowStr = new Date().toLocaleDateString('pt-BR');
 
     if (scorePayload.id) {
       const idx = scores.findIndex((s) => s.id === scorePayload.id);
       if (idx !== -1) {
         scores[idx] = { ...scores[idx], ...scorePayload, updatedAt: nowStr };
-        localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(scores));
+        localStorage.setItem(key, JSON.stringify(scores));
         return scores;
       }
     }
@@ -70,13 +73,14 @@ export const StorageService = {
       updatedAt: nowStr
     };
     const updated = [newScore, ...scores];
-    localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(updated));
+    localStorage.setItem(key, JSON.stringify(updated));
     return updated;
   },
 
-  deleteScore(id) {
-    const updated = this.getScores().filter((s) => s.id !== id);
-    localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(updated));
+  deleteScore(id, userId) {
+    if (!userId) return [];
+    const updated = this.getScores(userId).filter((s) => s.id !== id);
+    localStorage.setItem(`${STORAGE_KEYS.SCORES}_user_${userId}`, JSON.stringify(updated));
     return updated;
   },
 

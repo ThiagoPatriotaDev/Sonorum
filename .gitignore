@@ -36,3 +36,6 @@ Thumbs.db
 !.vscode/settings.json
 !.vscode/launch.json
 !.vscode/tasks.json
+
+backend/data/community.json
+backend/data/*.tmp

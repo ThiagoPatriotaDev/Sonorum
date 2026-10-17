@@ -1,37 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function Header({ activeTab, onChangeTab, savedCount }) {
+const LINKS = [
+  { id: 'inicio', label: 'Início' },
+  { id: 'ensino', label: 'Explorar aulas' },
+  { id: 'comunidade', label: 'Comunidade' },
+  { id: 'editor', label: 'Estúdio de partituras' },
+  { id: 'minhas', label: 'Minha biblioteca' }
+];
+
+export default function Header({ activeTab, onChangeTab, savedCount, user, onOpenAuth, onSignOut }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const handleNavigate = (tab) => { onChangeTab(tab); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
   return (
-    <header className="app-header">
+    <header className="sonorum-header">
       <div className="header-container">
-        <div className="brand">
-          <div className="brand-icon">♪</div>
-          <div>
-            <div>SONORUM</div>
-            <div className="brand-subtitle"></div>
+        <button className="brand" onClick={() => handleNavigate('inicio')} aria-label="Sonorum, voltar ao início">
+          <span className="brand-icon" aria-hidden="true"><span>𝄞</span></span>
+          <span className="brand-lockup"><strong>sonorum<span className="brand-dot">.</span></strong><small>música em movimento</small></span>
+        </button>
+        <button className="mobile-menu-button" aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '✕' : '☰'}</button>
+        <nav className={`nav-tabs ${menuOpen ? 'nav-open' : ''}`} aria-label="Navegação principal">
+          {LINKS.map((link) => (
+            <button key={link.id} className={`nav-tab ${activeTab === link.id ? 'active' : ''}`} onClick={() => handleNavigate(link.id)} aria-current={activeTab === link.id ? 'page' : undefined}>
+              {link.label}{link.id === 'minhas' && savedCount > 0 && user && <span className="badge-count">{savedCount}</span>}
+            </button>
+          ))}
+          <div className="mobile-account-link">
+            {user ? <button className="nav-tab" onClick={onSignOut}>Sair da conta</button> : <button className="nav-tab" onClick={() => { setMenuOpen(false); onOpenAuth(); }}>Entrar / cadastrar</button>}
           </div>
-        </div>
-
-        <nav className="nav-tabs">
-          <button
-            className={`nav-tab ${activeTab === 'ensino' ? 'active' : ''}`}
-            onClick={() => onChangeTab('ensino')}
-          >
-            🎸 Instrumentos & Aulas
-          </button>
-          <button
-            className={`nav-tab ${activeTab === 'editor' ? 'active' : ''}`}
-            onClick={() => onChangeTab('editor')}
-          >
-            🎼 Criar Partitura
-          </button>
-          <button
-            className={`nav-tab ${activeTab === 'minhas' ? 'active' : ''}`}
-            onClick={() => onChangeTab('minhas')}
-          >
-            📁 Minhas Partituras <span className="badge-count">{savedCount}</span>
-          </button>
         </nav>
+        <div className="nav-account">
+          {user ? (
+            <div className="account-chip" title={`${user.name} · ${user.role === 'teacher' ? 'Professor' : 'Estudante'}`}>
+              <span className="avatar-mini">{user.name.charAt(0).toUpperCase()}</span>
+              <span className="account-name">{user.name.split(' ')[0]}</span>
+              <button className="signout-button" onClick={onSignOut} title="Sair da conta" aria-label="Sair da conta">↗</button>
+            </div>
+          ) : <button className="login-button" onClick={onOpenAuth}>Entrar <span>↗</span></button>}
+        </div>
       </div>
     </header>
   );
