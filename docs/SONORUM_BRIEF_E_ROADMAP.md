@@ -27,8 +27,8 @@
 | Página inicial e informações do curso | Pode ler | Pode ler |
 | Instrumentos e tutoriais | Pode explorar e praticar | Pode explorar e praticar |
 | Videoaulas de estudantes e professores | Pode assistir | Pode assistir e publicar |
-| Estúdio | Pode experimentar e exportar MusicXML | Pode salvar e organizar suas composições locais |
-| Biblioteca pessoal | Incentivo ao cadastro | Consulta o acervo salvo neste navegador |
+| Studio unificado | Pode criar, editar e salvar localmente | Pode criar, editar e salvar no acervo local vinculado à conta |
+| Recentes no Studio | Consulta e edita o acervo do visitante | Consulta o acervo local da conta, sem sincronização online |
 
 ### Inovações a explorar na etapa seguinte
 
@@ -53,14 +53,17 @@ A arquitetura proposta separa: **modelo musical editável** → **exportador Mus
 
 ## Prioridades reais
 
-### Etapa 1 | Protótipo visual e funcional (iniciada)
+### Etapa 1 | Protótipo visual e funcional (evoluído)
 - [x] Identidade visual diferenciada e home institucional
-- [x] Trilhas de quatro instrumentos preservadas
+- [x] Quatro trilhas originais preservadas e quatro instrumentos adicionais com aulas introdutórias
 - [x] Exemplo sonoro e passagem da aula para o editor
 - [x] Contas básicas de alunos/professores, com perfil autodeclarado
 - [x] Publicação de videoaulas via link do YouTube
 - [x] Exportação MusicXML e visualização OSMD sob demanda
-- [x] Biblioteca de partituras local segmentada por conta
+- [x] Studio e biblioteca unificados, recentes e salvamento local inclusive para visitantes
+- [x] Faixa de ferramentas estilo Word, pauta com seleção, edição, piano virtual, undo/redo e atalhos
+- [x] Instrumentos abrem telas próprias com botão voltar, trilha e videoaulas filtradas
+- [x] Home limpa sem rótulos técnicos decorativos
 - [x] Estilos responsivos e movimento reduzido
 
 ### Etapa 2 | Pronto para pilotos com curso real

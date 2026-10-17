@@ -24,13 +24,15 @@ export const DURATION_OPTIONS = [
 export function getPitchInfo(pitchStr) {
   if (!pitchStr || pitchStr === 'REST') return null;
   const isSharp = pitchStr.includes('#');
-  const baseId = pitchStr.replace('#', '');
+  const isFlat = pitchStr.includes('b');
+  const baseId = pitchStr.replace(/[#b]/g, '');
   const baseObj = PITCH_CATALOG.find((p) => p.id === baseId) || PITCH_CATALOG[0];
-  const freq = isSharp ? baseObj.freq * Math.pow(2, 1 / 12) : baseObj.freq;
+  const freq = baseObj.freq * Math.pow(2, (isSharp ? 1 : isFlat ? -1 : 0) / 12);
   return {
     ...baseObj,
     isSharp,
+    isFlat,
     freq,
-    displayLabel: isSharp ? baseObj.solfege.replace(/(\d?)$/, '♯$1') : baseObj.solfege
+    displayLabel: (isSharp || isFlat) ? baseObj.solfege.replace(/(\d?)$/, `${isSharp ? '♯' : '♭'}$1`) : baseObj.solfege
   };
 }

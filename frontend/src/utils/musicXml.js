@@ -3,10 +3,10 @@ const typeByUnits = { 64: 'whole', 32: 'half', 16: 'quarter', 8: 'eighth', 4: '1
 const units = [64, 32, 16, 8, 4, 2, 1];
 
 function noteXml(note, count, first, last, continued) {
-  const pitch = /^([A-G])(#?)([0-8])$/.exec(note.pitch || '');
+  const pitch = /^([A-G])([#b]?)([0-8])$/.exec(note.pitch || '');
   const isRest = note.pitch === 'REST' || !pitch;
-  const pitchXml = isRest ? '<rest />' : `<pitch><step>${pitch[1]}</step>${pitch[2] ? '<alter>1</alter>' : ''}<octave>${pitch[3]}</octave></pitch>`;
-  const accidentalXml = !isRest && pitch[2] && first ? '<accidental>sharp</accidental>' : '';
+  const pitchXml = isRest ? '<rest />' : `<pitch><step>${pitch[1]}</step>${pitch[2] === '#' ? '<alter>1</alter>' : pitch[2] === 'b' ? '<alter>-1</alter>' : ''}<octave>${pitch[3]}</octave></pitch>`;
+  const accidentalXml = !isRest && pitch[2] && first ? `<accidental>${pitch[2] === '#' ? 'sharp' : 'flat'}</accidental>` : '';
   const tieIn = continued && !first ? '<tie type="stop"/>' : '';
   const tieOut = continued && !last ? '<tie type="start"/>' : '';
   const notation = continued && !isRest ? `<notations>${!first ? '<tied type="stop"/>' : ''}${!last ? '<tied type="start"/>' : ''}</notations>` : '';

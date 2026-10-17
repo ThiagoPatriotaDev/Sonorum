@@ -23,7 +23,7 @@ export default function SonicSculpture({ compact = false }) {
       <div className="sculpture-orbit sculpture-orbit-one" />
       <div className="sculpture-orbit sculpture-orbit-two" />
       <div className="sculpture-inner" style={{ '--mx': `${move.x}deg`, '--my': `${move.y}deg` }}>
-        <div className="sculpture-disc"><span>SONORUM</span><small>001 / O som nos move</small><i>♫</i></div>
+        <div className="sculpture-disc"><span>SONORUM</span><i>♫</i></div>
         <svg className="wave-art" viewBox="0 0 600 460" fill="none" aria-hidden="true">
           <defs>
             <linearGradient id="sonorum-gold" x1="0" y1="0" x2="600" y2="460" gradientUnits="userSpaceOnUse"><stop stopColor="#ffcd8a"/><stop offset=".5" stopColor="#e69a77"/><stop offset="1" stopColor="#eae0c6"/></linearGradient>
@@ -32,7 +32,6 @@ export default function SonicSculpture({ compact = false }) {
           {Array.from({ length: 17 }, (_, i) => <path key={i} d={wave(i * .14, 108 - i * 2.9, (i - 8) * 3.1)} stroke={i % 2 ? 'url(#sonorum-gold)' : 'url(#sonorum-pink)'} strokeWidth={i % 4 === 0 ? 2.5 : 1.35} opacity={.43 + i * .03} />)}
         </svg>
       </div>
-      <span className="sculpture-corner top">FIG. 01 / FREQUÊNCIA</span><span className="sculpture-corner bottom">440 Hz / A4</span>
     </div>
   );
 }

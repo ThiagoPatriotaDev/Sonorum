@@ -4,8 +4,7 @@ const LINKS = [
   { id: 'inicio', label: 'Início' },
   { id: 'ensino', label: 'Explorar aulas' },
   { id: 'comunidade', label: 'Comunidade' },
-  { id: 'editor', label: 'Estúdio de partituras' },
-  { id: 'minhas', label: 'Minha biblioteca' }
+  { id: 'partituras', label: 'Partituras' }
 ];
 
 export default function Header({ activeTab, onChangeTab, savedCount, user, onOpenAuth, onSignOut }) {
@@ -23,7 +22,7 @@ export default function Header({ activeTab, onChangeTab, savedCount, user, onOpe
         <nav className={`nav-tabs ${menuOpen ? 'nav-open' : ''}`} aria-label="Navegação principal">
           {LINKS.map((link) => (
             <button key={link.id} className={`nav-tab ${activeTab === link.id ? 'active' : ''}`} onClick={() => handleNavigate(link.id)} aria-current={activeTab === link.id ? 'page' : undefined}>
-              {link.label}{link.id === 'minhas' && savedCount > 0 && user && <span className="badge-count">{savedCount}</span>}
+              {link.label}{link.id === 'partituras' && savedCount > 0 && user && <span className="badge-count">{savedCount}</span>}
             </button>
           ))}
           <div className="mobile-account-link">

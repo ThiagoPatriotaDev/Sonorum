@@ -1,4 +1,5 @@
-export const INITIAL_INSTRUMENTS = [
+import { extendLessons } from './lessonExtensions.js';
+const BASE_INSTRUMENTS = [
   {
     id: 'violao',
     name: 'Violão',
@@ -147,8 +148,46 @@ export const INITIAL_INSTRUMENTS = [
         annotations: 'Articulação suave com sopro constante.'
       }
     ]
+  },
+  {
+    id: 'canto', name: 'Canto', scoreInstrument: 'Canto', emoji: '🎤', category: 'Voz',
+    description: 'Respiração, afinação e técnica vocal com exercícios de escuta.',
+    lessons: [{ id: 'canto-1', title: '1. Respiração e Aquecimento Vocal', level: 'Iniciante', duration: '14 min',
+      summary: 'Pratique emissão confortável e afinação em pequenas sequências de notas.',
+      steps: ['Alinhe a postura sem tensionar pescoço e ombros.', 'Expire em fluxo contínuo e sem forçar a garganta.', 'Cante as notas Dó, Ré, Mi, Ré, Dó em volume moderado e região confortável.'],
+      diagram: 'Solfejo: Dó – Ré – Mi – Ré – Dó',
+      practiceNotes: [{pitch:'C4',dur:1},{pitch:'D4',dur:1},{pitch:'E4',dur:2},{pitch:'D4',dur:1},{pitch:'C4',dur:2}], annotations: 'Aqueça sem esforço e interrompa diante de desconforto.' }]
+  },
+  {
+    id: 'baixo', name: 'Baixo elétrico', scoreInstrument: 'Baixo', emoji: '🎸', category: 'Cordas',
+    description: 'Pulsação, linhas graves e coordenação das mãos.',
+    lessons: [{ id:'baixo-1', title:'1. Pulsação e Primeira Linha de Baixo', level:'Iniciante', duration:'16 min',
+      summary:'Pratique a marcação de pulsos regulares com um padrão simples.',
+      steps:['Posicione o instrumento de forma confortável e relaxe os ombros.', 'Alternando indicador e médio, mantenha a pulsação constante.', 'Ouça uma frase simples e repita em andamento lento.'],
+      diagram:'Padrão: Dó – Dó – Sol – Sol | Lá – Lá – Sol',
+      practiceNotes:[{pitch:'C4',dur:1},{pitch:'C4',dur:1},{pitch:'G4',dur:1},{pitch:'G4',dur:1},{pitch:'A4',dur:1},{pitch:'A4',dur:1},{pitch:'G4',dur:2}], annotations:'Exercício demonstrativo. O som sintetizado não reproduz a tessitura grave real do baixo.' }]
+  },
+  {
+    id: 'saxofone', name: 'Saxofone', scoreInstrument: 'Saxofone', emoji: '🎷', category: 'Sopro',
+    description: 'Embocadura, coluna de ar e primeiras melodias.',
+    lessons: [{ id:'saxofone-1', title:'1. Coluna de Ar e Frases Curtas', level:'Iniciante', duration:'17 min',
+      summary:'Descubra como sustentar notas e construir pequenas frases musicais.',
+      steps:['Mantenha a postura ereta, sem rigidez.', 'Trabalhe ataques suaves com emissão estável.', 'Repita a sequência demonstrativa em velocidade lenta.'],
+      diagram:'Frase de referência: Sol – Lá – Si – Lá – Sol',
+      practiceNotes:[{pitch:'G4',dur:2},{pitch:'A4',dur:1},{pitch:'B4',dur:1},{pitch:'A4',dur:1},{pitch:'G4',dur:2}], annotations:'Notas de referência em som de concerto; a transposição específica do saxofone não está implementada.' }]
+  },
+  {
+    id: 'bateria', name: 'Bateria', scoreInstrument: 'Bateria', emoji: '🥁', category: 'Percussão',
+    description: 'Coordenação, divisão rítmica e primeiros grooves.',
+    lessons: [{ id:'bateria-1', title:'1. Pulso e Divisão de Quatro Tempos', level:'Iniciante', duration:'13 min',
+      summary:'Conte os quatro tempos e separe pulsação de subdivisão.',
+      steps:['Conte em voz alta: um, dois, três, quatro.', 'Marque os tempos 1 e 3 com o pé e os tempos 2 e 4 com as mãos.', 'Acompanhe uma sequência rítmica simples, repetindo de forma constante.'],
+      diagram:'Contagem: 1 & 2 & 3 & 4 &',
+      practiceNotes:[{pitch:'C4',dur:1},{pitch:'REST',dur:.5},{pitch:'G4',dur:.5},{pitch:'C4',dur:1},{pitch:'G4',dur:1}], annotations:'A pauta usa alturas demonstrativas. Notação e timbres de bateria dedicados são uma evolução futura.' }]
   }
 ];
+
+export const INITIAL_INSTRUMENTS = extendLessons(BASE_INSTRUMENTS);
 
 export const INITIAL_SCORES = [
   {

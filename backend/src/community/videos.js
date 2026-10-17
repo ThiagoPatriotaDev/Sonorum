@@ -26,7 +26,7 @@ export function publishVideo(req, res) {
   const youtubeId = getYouTubeId(url);
   const name = typeof title === 'string' ? title.trim() : '';
   const caption = typeof description === 'string' ? description.trim() : '';
-  if (name.length < 5 || name.length > 120 || caption.length > 500 || !['violao', 'violino', 'teclado', 'flauta'].includes(instrumentId) || !youtubeId) {
+  if (name.length < 5 || name.length > 120 || caption.length > 500 || !['violao', 'violino', 'teclado', 'flauta', 'canto', 'baixo', 'saxofone', 'bateria'].includes(instrumentId) || !youtubeId) {
     return res.status(400).json({ error: 'Informe título (5 a 120 caracteres), instrumento e link válido do YouTube.' });
   }
   const video = { id: crypto.randomUUID(), title: name, description: caption, instrumentId, youtubeId, authorId: req.user.id, author: req.user.name, authorRole: req.user.role, createdAt: new Date().toISOString() };

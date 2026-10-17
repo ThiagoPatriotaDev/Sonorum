@@ -53,15 +53,15 @@ export const StorageService = {
   },
 
   saveScore(scorePayload, userId) {
-    if (!userId) throw new Error('Faça login para salvar partituras.');
-    const key = `${STORAGE_KEYS.SCORES}_user_${userId}`;
+    const key = userId ? `${STORAGE_KEYS.SCORES}_user_${userId}` : STORAGE_KEYS.SCORES;
     const scores = this.getScores(userId);
     const nowStr = new Date().toLocaleDateString('pt-BR');
+    const updatedAtISO = new Date().toISOString();
 
     if (scorePayload.id) {
       const idx = scores.findIndex((s) => s.id === scorePayload.id);
       if (idx !== -1) {
-        scores[idx] = { ...scores[idx], ...scorePayload, updatedAt: nowStr };
+        scores[idx] = { ...scores[idx], ...scorePayload, updatedAt: nowStr, updatedAtISO };
         localStorage.setItem(key, JSON.stringify(scores));
         return scores;
       }
@@ -69,8 +69,9 @@ export const StorageService = {
 
     const newScore = {
       ...scorePayload,
-      id: `score-${Date.now()}`,
-      updatedAt: nowStr
+      id: `score-${crypto.randomUUID?.() || Date.now()}`,
+      updatedAt: nowStr,
+      updatedAtISO
     };
     const updated = [newScore, ...scores];
     localStorage.setItem(key, JSON.stringify(updated));
@@ -78,9 +79,9 @@ export const StorageService = {
   },
 
   deleteScore(id, userId) {
-    if (!userId) return [];
     const updated = this.getScores(userId).filter((s) => s.id !== id);
-    localStorage.setItem(`${STORAGE_KEYS.SCORES}_user_${userId}`, JSON.stringify(updated));
+    const key = userId ? `${STORAGE_KEYS.SCORES}_user_${userId}` : STORAGE_KEYS.SCORES;
+    localStorage.setItem(key, JSON.stringify(updated));
     return updated;
   },
 

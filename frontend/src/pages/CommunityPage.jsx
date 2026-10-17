@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { INITIAL_INSTRUMENTS } from '../data/instruments.js';
 
-const LABELS = { violao: 'Violão', teclado: 'Piano / Teclado', violino: 'Violino', flauta: 'Flauta doce' };
+const LABELS = Object.fromEntries(INITIAL_INSTRUMENTS.map(({ id, name }) => [id, name]));
 
 export default function CommunityPage({ videos, user, onOpenAuth, onPublish, onDelete, error, onClearError }) {
   const [publishing, setPublishing] = useState(false);
