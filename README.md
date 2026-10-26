@@ -104,3 +104,11 @@ Sonorum/
 ## Ajuste V4.1
 
 O retrato de Beethoven foi reposicionado para a seção **“Mais que estudar música”**, abaixo da primeira dobra. A escultura abstrata original foi restaurada na área inicial. Detalhes em [`docs/ALTERACOES_V4_1.md`](docs/ALTERACOES_V4_1.md).
+
+## RF01 · Site público do curso (nova navegação)
+
+O cabeçalho tem uma experiência de navegação institucional no item **Início**, com painel de prévia para O curso, Matriz curricular, Docentes e Infraestrutura. Com mouse abre em hover; com clique funciona como painel expansível; no celular usa menu por toque.
+
+Os endereços `#/curso`, `#/matriz`, `#/docentes` e `#/infraestrutura` podem ser abertos diretamente.
+
+Consulte `docs/RF01_SITE_PUBLICO_E_NAVEGACAO.md` para preencher os dados oficiais, os critérios de aceite e os testes de navegação. As informações institucionais ainda não fornecidas estão explicitamente identificadas como pendentes de validação.

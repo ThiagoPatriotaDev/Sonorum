@@ -7,12 +7,16 @@ import ScoreWorkspacePage from './pages/ScoreWorkspacePage.jsx';
 import CommunityPage from './pages/CommunityPage.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import AccountPage from './pages/AccountPage.jsx';
+import PublicCoursePage from './pages/PublicCoursePage.jsx';
+import { PUBLIC_SECTIONS } from './data/publicCourse.js';
 import { StorageService } from './services/storageService.js';
 import { CommunityApi } from './services/communityApi.js';
 import { INITIAL_INSTRUMENTS } from './data/instruments.js';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('inicio');
+  const initialPublic = PUBLIC_SECTIONS.find(section => typeof window !== 'undefined' && window.location.hash === `#/${section.id}`);
+  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : 'inicio');
+  const [publicSection, setPublicSection] = useState(initialPublic?.id || 'curso');
   const [scores, setScores] = useState(() => StorageService.getScores());
   const [completedLessons, setCompletedLessons] = useState(() => StorageService.getProgress());
   const [editingScore, setEditingScore] = useState(null);
@@ -49,13 +53,31 @@ export default function App() {
     return () => { mounted = false; };
   }, []);
 
+  useEffect(() => {
+    const navigateHash = () => {
+      const match = PUBLIC_SECTIONS.find(section => window.location.hash === `#/${section.id}`);
+      if (match) { setPublicSection(match.id); setActiveTab('institucional'); window.scrollTo(0,0); }
+    };
+    window.addEventListener('hashchange', navigateHash);
+    return () => window.removeEventListener('hashchange', navigateHash);
+  }, []);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'instant' });
+  const canLeaveStudio = () => activeTab !== 'partituras' || studioMode !== 'edit' || !studioUnsaved || window.confirm('Você tem alterações não salvas. Deseja sair do editor mesmo assim?');
+  const openPublicSection = (section) => {
+    if (!PUBLIC_SECTIONS.some(s => s.id === section) || !canLeaveStudio()) return;
+    setStudioUnsaved(false);
+    setPublicSection(section);
+    setActiveTab('institucional');
+    if (window.location.hash !== `#/${section}`) window.location.hash = `/${section}`;
+    scrollToTop();
+  };
   const changeTab = (tab) => {
-    if (activeTab === 'partituras' && studioMode === 'edit' && studioUnsaved && !window.confirm('Você tem alterações não salvas. Deseja sair do editor mesmo assim?')) return;
+    if (!canLeaveStudio()) return;
     setStudioUnsaved(false);
     if (tab === 'ensino') setSelectedInstrument(null);
     if (tab === 'partituras') setStudioMode('hub');
     setActiveTab(tab);
+    if (window.location.hash.startsWith('#/')) window.history.replaceState(null, '', window.location.pathname + window.location.search);
     scrollToTop();
   };
   const chooseInstrument = (id) => { setSelectedInstrument(id); setActiveTab('ensino'); scrollToTop(); };
@@ -114,10 +136,11 @@ export default function App() {
   const openAuth = () => { setAuthError(''); setAuthVisible(true); };
 
   return <div className="site-root">
-    <Header activeTab={activeTab} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
-    <main className={activeTab === 'inicio' ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
+    <Header activeTab={activeTab} activePublicSection={publicSection} onOpenPublicSection={openPublicSection} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
+    <main className={['inicio','institucional'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
       {activeTab === 'conta' && <AccountPage user={user} activeSection={accountSection} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut} />}
-      {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} />}
+      {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} onOpenPublicSection={openPublicSection} />}
+      {activeTab === 'institucional' && <PublicCoursePage activeSection={publicSection} onSelectSection={openPublicSection} onNavigate={changeTab} />}
       {activeTab === 'ensino' && <InstrumentsPage instruments={INITIAL_INSTRUMENTS} selectedInstrument={selectedInstrument} onSelectedInstrumentChange={setSelectedInstrument} videos={videos} completedLessons={completedLessons} onToggleLesson={handleToggleLesson} onPracticeInEditor={handlePracticeInEditor} onVisitCommunity={()=>changeTab('comunidade')} />}
       {activeTab === 'comunidade' && <><CommunityPage videos={videos} user={user} onOpenAuth={openAuth} onPublish={handlePublish} onDelete={handleDeleteVideo} error={videoError} onClearError={()=>setVideoError('')} />{videoError && <p className="server-warning" role="status">{videoError}</p>}</>}
       {activeTab === 'partituras' && (studioMode === 'hub' ? <ScoreWorkspacePage scores={scores} user={user} onOpenScore={openScore} onNewScore={()=>openScore(null)} onDeleteScore={handleDeleteScore} /> : <ScoreEditorPage key={editorSession} initialScore={editingScore} onSaveScore={handleSaveScore} onDirtyChange={setStudioUnsaved} onBack={()=>{setStudioUnsaved(false);setStudioMode('hub');scrollToTop();}} onNewScore={()=>openScore(null)} />)}
