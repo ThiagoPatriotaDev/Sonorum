@@ -1,0 +1,12 @@
+SONORUM V5.4 - Correção RF02 Eventos + dropdown Comunidade + triângulos menores.
+
+Substitua no projeto os arquivos abaixo pelos correspondentes do pacote, mantendo a estrutura de diretórios.
+frontend/src/App.jsx
+frontend/src/components/Header.jsx
+frontend/src/pages/CommunityPage.jsx
+frontend/src/pages/EventsPage.jsx
+frontend/src/data/events.js
+frontend/src/styles/global.css
+docs/RF02_EVENTOS_E_DROPDOWN.md
+
+Se precisar da instalação integral, utilize o ZIP completo.

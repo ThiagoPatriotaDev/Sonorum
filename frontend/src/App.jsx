@@ -8,6 +8,7 @@ import CommunityPage from './pages/CommunityPage.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import PublicCoursePage from './pages/PublicCoursePage.jsx';
+import EventsPage from './pages/EventsPage.jsx';
 import { PUBLIC_SECTIONS } from './data/publicCourse.js';
 import { StorageService } from './services/storageService.js';
 import { CommunityApi } from './services/communityApi.js';
@@ -15,7 +16,7 @@ import { INITIAL_INSTRUMENTS } from './data/instruments.js';
 
 export default function App() {
   const initialPublic = PUBLIC_SECTIONS.find(section => typeof window !== 'undefined' && window.location.hash === `#/${section.id}`);
-  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : 'inicio');
+  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : (typeof window !== 'undefined' && window.location.hash === '#/eventos' ? 'eventos' : 'inicio'));
   const [publicSection, setPublicSection] = useState(initialPublic?.id || 'curso');
   const [scores, setScores] = useState(() => StorageService.getScores());
   const [completedLessons, setCompletedLessons] = useState(() => StorageService.getProgress());
@@ -57,6 +58,7 @@ export default function App() {
     const navigateHash = () => {
       const match = PUBLIC_SECTIONS.find(section => window.location.hash === `#/${section.id}`);
       if (match) { setPublicSection(match.id); setActiveTab('institucional'); window.scrollTo(0,0); }
+      else if (window.location.hash === '#/eventos') { setActiveTab('eventos'); window.scrollTo(0,0); }
     };
     window.addEventListener('hashchange', navigateHash);
     return () => window.removeEventListener('hashchange', navigateHash);
@@ -77,7 +79,8 @@ export default function App() {
     if (tab === 'ensino') setSelectedInstrument(null);
     if (tab === 'partituras') setStudioMode('hub');
     setActiveTab(tab);
-    if (window.location.hash.startsWith('#/')) window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    if (tab === 'eventos') { if (window.location.hash !== '#/eventos') window.location.hash = '/eventos'; }
+    else if (window.location.hash.startsWith('#/')) window.history.replaceState(null, '', window.location.pathname + window.location.search);
     scrollToTop();
   };
   const chooseInstrument = (id) => { setSelectedInstrument(id); setActiveTab('ensino'); scrollToTop(); };
@@ -137,12 +140,13 @@ export default function App() {
 
   return <div className="site-root">
     <Header activeTab={activeTab} activePublicSection={publicSection} onOpenPublicSection={openPublicSection} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
-    <main className={['inicio','institucional'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
+    <main className={['inicio','institucional','eventos'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
       {activeTab === 'conta' && <AccountPage user={user} activeSection={accountSection} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut} />}
       {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} onOpenPublicSection={openPublicSection} />}
       {activeTab === 'institucional' && <PublicCoursePage activeSection={publicSection} onSelectSection={openPublicSection} onNavigate={changeTab} />}
+      {activeTab === 'eventos' && <EventsPage onNavigate={changeTab} />}
       {activeTab === 'ensino' && <InstrumentsPage instruments={INITIAL_INSTRUMENTS} selectedInstrument={selectedInstrument} onSelectedInstrumentChange={setSelectedInstrument} videos={videos} completedLessons={completedLessons} onToggleLesson={handleToggleLesson} onPracticeInEditor={handlePracticeInEditor} onVisitCommunity={()=>changeTab('comunidade')} />}
-      {activeTab === 'comunidade' && <><CommunityPage videos={videos} user={user} onOpenAuth={openAuth} onPublish={handlePublish} onDelete={handleDeleteVideo} error={videoError} onClearError={()=>setVideoError('')} />{videoError && <p className="server-warning" role="status">{videoError}</p>}</>}
+      {activeTab === 'comunidade' && <><CommunityPage videos={videos} user={user} onOpenAuth={openAuth} onPublish={handlePublish} onDelete={handleDeleteVideo} onNavigateEvents={()=>changeTab('eventos')} error={videoError} onClearError={()=>setVideoError('')} />{videoError && <p className="server-warning" role="status">{videoError}</p>}</>}
       {activeTab === 'partituras' && (studioMode === 'hub' ? <ScoreWorkspacePage scores={scores} user={user} onOpenScore={openScore} onNewScore={()=>openScore(null)} onDeleteScore={handleDeleteScore} /> : <ScoreEditorPage key={editorSession} initialScore={editingScore} onSaveScore={handleSaveScore} onDirtyChange={setStudioUnsaved} onBack={()=>{setStudioUnsaved(false);setStudioMode('hub');scrollToTop();}} onNewScore={()=>openScore(null)} />)}
     </main>
     {authVisible && <AuthModal onClose={()=>setAuthVisible(false)} onSubmit={handleAuth} error={authError} onClearError={()=>setAuthError('')} />}
