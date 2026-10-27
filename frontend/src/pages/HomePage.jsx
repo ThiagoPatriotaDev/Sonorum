@@ -1,5 +1,6 @@
 import React from 'react';
 import SonicSculpture from '../components/SonicSculpture.jsx';
+import NewsHighlights from '../components/NewsHighlights.jsx';
 
 const instruments = [
   { name: 'Violão', description: 'Cordas, ritmo e harmonia', emoji: '♬', id: 'violao', number: '01' },
@@ -8,7 +9,7 @@ const instruments = [
   { name: 'Flauta', description: 'Respiração e musicalidade', emoji: '♫', id: 'flauta', number: '04' },
 ];
 
-export default function HomePage({ onNavigate, onChooseInstrument, onOpenPublicSection }) {
+export default function HomePage({ onNavigate, onChooseInstrument, onOpenPublicSection, onArticle }) {
   return (
     <div className="home-page">
       <section className="hero-section" aria-labelledby="hero-title">
@@ -31,6 +32,7 @@ export default function HomePage({ onNavigate, onChooseInstrument, onOpenPublicS
         </figure>
         <div className="intro-main"><div className="section-kicker">BEM-VINDO AO SONORUM</div><h2>Mais que estudar música.<br /><em>Fazer parte dela.</em></h2><p>Um portal para conhecer a formação musical e um espaço de aprendizagem contínua. Explore instrumentos, assista a aulas compartilhadas por estudantes e professores e escreva suas próprias composições.</p><div className="intro-split"><div><strong>Conheça o curso</strong><p>Entenda as possibilidades de formação, a rotina de estudos e como buscar informações oficiais de ingresso.</p></div><div><strong>Aprenda fazendo</strong><p>Experimente exercícios, ouça exemplos e pratique no estúdio de partituras.</p></div></div><button type="button" className="home-public-cta" onClick={()=>onOpenPublicSection('curso')}>Visitar a página do curso <span>↗</span></button></div>
       </section>
+      <NewsHighlights onNavigate={onNavigate} onArticle={onArticle} />
       <section className="instrument-feature">
         <div className="feature-heading"><div><h2>Qual som combina<br /><em>com você?</em></h2></div><button className="text-link" onClick={() => onNavigate('ensino')}>Ver todas as aulas <span>↗</span></button></div>
         <div className="feature-grid">{instruments.map((i) => <button className={`feature-instrument feature-${i.id}`} key={i.id} onClick={() => onChooseInstrument(i.id)}><span className="feature-glyph" aria-hidden="true">{i.emoji}</span><span className="feature-bottom"><span><strong>{i.name}</strong><small>{i.description}</small></span><span className="feature-arrow">↗</span></span></button>)}</div>

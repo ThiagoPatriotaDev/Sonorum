@@ -22,6 +22,7 @@ export function listVideos(req, res) {
 }
 
 export function publishVideo(req, res) {
+  if (req.user.role === 'pending') return res.status(403).json({error:'Seu perfil institucional aguarda aprovação.'});
   const { title, description, instrumentId, url } = req.body || {};
   const youtubeId = getYouTubeId(url);
   const name = typeof title === 'string' ? title.trim() : '';
@@ -37,7 +38,7 @@ export function publishVideo(req, res) {
 export function deleteVideo(req, res) {
   const video = communityStore.read().videos.find((v) => v.id === req.params.id);
   if (!video) return res.status(404).json({ error: 'Videoaula não encontrada.' });
-  if (video.authorId !== req.user.id) return res.status(403).json({ error: 'Você só pode excluir suas publicações.' });
+  if (video.authorId !== req.user.id && !['admin','coordinator'].includes(req.user.role)) return res.status(403).json({ error: 'Você só pode excluir suas publicações.' });
   communityStore.write((state) => { state.videos = state.videos.filter((v) => v.id !== video.id); });
   res.json({ deleted: true });
 }

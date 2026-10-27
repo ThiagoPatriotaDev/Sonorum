@@ -9,6 +9,9 @@ import AuthModal from './components/AuthModal.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import PublicCoursePage from './pages/PublicCoursePage.jsx';
 import EventsPage from './pages/EventsPage.jsx';
+import NewsPage from './pages/NewsPage.jsx';
+import AdminConsolePage from './pages/AdminConsolePage.jsx';
+import './styles/editorial.css';
 import { PUBLIC_SECTIONS } from './data/publicCourse.js';
 import { StorageService } from './services/storageService.js';
 import { CommunityApi } from './services/communityApi.js';
@@ -16,7 +19,8 @@ import { INITIAL_INSTRUMENTS } from './data/instruments.js';
 
 export default function App() {
   const initialPublic = PUBLIC_SECTIONS.find(section => typeof window !== 'undefined' && window.location.hash === `#/${section.id}`);
-  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : (typeof window !== 'undefined' && window.location.hash === '#/eventos' ? 'eventos' : 'inicio'));
+  const initialHash = typeof window !== 'undefined' ? window.location.hash : '';
+  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : initialHash === '#/eventos' ? 'eventos' : initialHash.startsWith('#/noticia/') ? 'noticia' : initialHash === '#/noticias' ? 'noticias' : 'inicio');
   const [publicSection, setPublicSection] = useState(initialPublic?.id || 'curso');
   const [scores, setScores] = useState(() => StorageService.getScores());
   const [completedLessons, setCompletedLessons] = useState(() => StorageService.getProgress());
@@ -31,6 +35,7 @@ export default function App() {
   const [videos, setVideos] = useState([]);
   const [videoError, setVideoError] = useState('');
   const [accountSection, setAccountSection] = useState('perfil');
+  const [articleSlug, setArticleSlug] = useState(() => initialHash.startsWith('#/noticia/') ? decodeURIComponent(initialHash.split('/')[2]||'') : '');
 
   useEffect(() => {
     try {
@@ -59,6 +64,8 @@ export default function App() {
       const match = PUBLIC_SECTIONS.find(section => window.location.hash === `#/${section.id}`);
       if (match) { setPublicSection(match.id); setActiveTab('institucional'); window.scrollTo(0,0); }
       else if (window.location.hash === '#/eventos') { setActiveTab('eventos'); window.scrollTo(0,0); }
+      else if (window.location.hash === '#/noticias') { setActiveTab('noticias'); window.scrollTo(0,0); }
+      else if (window.location.hash.startsWith('#/noticia/')) {setArticleSlug(decodeURIComponent(window.location.hash.split('/')[2]||''));setActiveTab('noticia');window.scrollTo(0,0);}
     };
     window.addEventListener('hashchange', navigateHash);
     return () => window.removeEventListener('hashchange', navigateHash);
@@ -80,9 +87,12 @@ export default function App() {
     if (tab === 'partituras') setStudioMode('hub');
     setActiveTab(tab);
     if (tab === 'eventos') { if (window.location.hash !== '#/eventos') window.location.hash = '/eventos'; }
+    else if (tab === 'noticias') { if(window.location.hash !== '#/noticias') window.location.hash='/noticias'; }
     else if (window.location.hash.startsWith('#/')) window.history.replaceState(null, '', window.location.pathname + window.location.search);
     scrollToTop();
   };
+  const openArticle = slug => {setArticleSlug(slug);setActiveTab('noticia');window.location.hash=`/noticia/${encodeURIComponent(slug)}`;scrollToTop();};
+  const openAdmin = () => {if(['admin','coordinator','teacher'].includes(user?.role)){setActiveTab('admin');scrollToTop();}};
   const chooseInstrument = (id) => { setSelectedInstrument(id); setActiveTab('ensino'); scrollToTop(); };
   const openScore = (score = null) => {
     setStudioUnsaved(false);
@@ -119,7 +129,7 @@ export default function App() {
       setAuthError('');
     } catch (error) { setAuthError(error.message); throw error; }
   };
-  const handleOpenAccount = (section = 'perfil') => { setAccountSection(section); setActiveTab('conta'); scrollToTop(); };
+  const handleOpenAccount = (section = 'perfil') => { if(section==='admin'){openAdmin();return;} setAccountSection(section); setActiveTab('conta'); scrollToTop(); };
   const handleUpdateProfile = async (name) => {
     const result = await CommunityApi.updateMe({ name }, CommunityApi.getToken());
     setUser(result.user);
@@ -140,11 +150,14 @@ export default function App() {
 
   return <div className="site-root">
     <Header activeTab={activeTab} activePublicSection={publicSection} onOpenPublicSection={openPublicSection} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
-    <main className={['inicio','institucional','eventos'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
+    <main className={['inicio','institucional','eventos','noticias','noticia','admin'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
       {activeTab === 'conta' && <AccountPage user={user} activeSection={accountSection} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut} />}
-      {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} onOpenPublicSection={openPublicSection} />}
+      {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} onOpenPublicSection={openPublicSection} onArticle={openArticle} />}
       {activeTab === 'institucional' && <PublicCoursePage activeSection={publicSection} onSelectSection={openPublicSection} onNavigate={changeTab} />}
       {activeTab === 'eventos' && <EventsPage onNavigate={changeTab} />}
+      {activeTab === 'noticias' && <NewsPage onNavigate={changeTab} onArticle={openArticle} />}
+      {activeTab === 'noticia' && <NewsPage slug={articleSlug} onNavigate={changeTab} onArticle={openArticle} />}
+      {activeTab === 'admin' && <AdminConsolePage user={user} onExit={()=>changeTab('inicio')} onPublished={()=>changeTab('noticias')} />}
       {activeTab === 'ensino' && <InstrumentsPage instruments={INITIAL_INSTRUMENTS} selectedInstrument={selectedInstrument} onSelectedInstrumentChange={setSelectedInstrument} videos={videos} completedLessons={completedLessons} onToggleLesson={handleToggleLesson} onPracticeInEditor={handlePracticeInEditor} onVisitCommunity={()=>changeTab('comunidade')} />}
       {activeTab === 'comunidade' && <><CommunityPage videos={videos} user={user} onOpenAuth={openAuth} onPublish={handlePublish} onDelete={handleDeleteVideo} onNavigateEvents={()=>changeTab('eventos')} error={videoError} onClearError={()=>setVideoError('')} />{videoError && <p className="server-warning" role="status">{videoError}</p>}</>}
       {activeTab === 'partituras' && (studioMode === 'hub' ? <ScoreWorkspacePage scores={scores} user={user} onOpenScore={openScore} onNewScore={()=>openScore(null)} onDeleteScore={handleDeleteScore} /> : <ScoreEditorPage key={editorSession} initialScore={editingScore} onSaveScore={handleSaveScore} onDirtyChange={setStudioUnsaved} onBack={()=>{setStudioUnsaved(false);setStudioMode('hub');scrollToTop();}} onNewScore={()=>openScore(null)} />)}

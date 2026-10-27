@@ -6,7 +6,9 @@ import communityRoutes from './community/routes.js';
 
 const app = express();
 
-app.use(cors());
+const allowedOrigin = process.env.SONORUM_FRONTEND_ORIGIN;
+if (process.env.NODE_ENV === 'production' && !allowedOrigin) throw Error('Configure SONORUM_FRONTEND_ORIGIN em produção.');
+app.use(cors({origin: allowedOrigin ? allowedOrigin.split(',').map(s=>s.trim()) : ['http://localhost:5173','http://127.0.0.1:5173']}));
 app.use(express.json({ limit: '100kb' }));
 
 app.get('/api/health', (req, res) => {
