@@ -139,6 +139,7 @@ export default function Header({ activeTab, activePublicSection, onChangeTab, on
           </div>
         </div>}
       </div>
+      <button className={`nav-tab ${activeTab === 'salas' ? 'active' : ''}`} onClick={() => handleNavigate('salas')} aria-current={activeTab === 'salas' ? 'page' : undefined}>Salas</button>
       {LINKS.filter(link => link.id === 'partituras').map(link => <button key={link.id} className={`nav-tab ${activeTab === link.id ? 'active' : ''}`} onClick={() => handleNavigate(link.id)} aria-current={activeTab === link.id ? 'page' : undefined}>{link.label}{savedCount > 0 && user && <span className="badge-count">{savedCount}</span>}</button>)}
       <div className="mobile-account-link">{user ? <><button className="nav-tab" onClick={() => goAccount('perfil')}>Meu perfil</button><button className="nav-tab" onClick={() => goAccount('configuracoes')}>Configurações</button>{['admin','coordinator','teacher'].includes(user.role)&&<button className="nav-tab" onClick={() => goAccount('admin')}>Painel editorial</button>}<button className="nav-tab" onClick={() => { setMenuOpen(false); onSignOut(); }}>Sair da conta</button></> : <button className="nav-tab" onClick={() => {setMenuOpen(false);onOpenAuth();}}>Entrar / cadastrar</button>}</div>
     </nav>

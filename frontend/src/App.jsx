@@ -11,6 +11,7 @@ import PublicCoursePage from './pages/PublicCoursePage.jsx';
 import EventsPage from './pages/EventsPage.jsx';
 import NewsPage from './pages/NewsPage.jsx';
 import AdminConsolePage from './pages/AdminConsolePage.jsx';
+import RoomReservationsPage from './pages/RoomReservationsPage.jsx';
 import './styles/editorial.css';
 import { PUBLIC_SECTIONS } from './data/publicCourse.js';
 import { StorageService } from './services/storageService.js';
@@ -21,7 +22,7 @@ import { INITIAL_INSTRUMENTS } from './data/instruments.js';
 export default function App() {
   const initialPublic = PUBLIC_SECTIONS.find(section => typeof window !== 'undefined' && window.location.hash === `#/${section.id}`);
   const initialHash = typeof window !== 'undefined' ? window.location.hash : '';
-  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : initialHash === '#/eventos' ? 'eventos' : initialHash.startsWith('#/noticia/') ? 'noticia' : initialHash === '#/noticias' ? 'noticias' : 'inicio');
+  const [activeTab, setActiveTab] = useState(initialPublic ? 'institucional' : initialHash === '#/salas' ? 'salas' : initialHash === '#/eventos' ? 'eventos' : initialHash.startsWith('#/noticia/') ? 'noticia' : initialHash === '#/noticias' ? 'noticias' : 'inicio');
   const [publicSection, setPublicSection] = useState(initialPublic?.id || 'curso');
   const [scores, setScores] = useState(() => StorageService.getScores());
   const [completedLessons, setCompletedLessons] = useState(() => StorageService.getProgress());
@@ -78,6 +79,7 @@ export default function App() {
     const navigateHash = () => {
       const match = PUBLIC_SECTIONS.find(section => window.location.hash === `#/${section.id}`);
       if (match) { setPublicSection(match.id); setActiveTab('institucional'); window.scrollTo(0,0); }
+      else if (window.location.hash === '#/salas') { setActiveTab('salas'); window.scrollTo(0,0); }
       else if (window.location.hash === '#/eventos') { setActiveTab('eventos'); window.scrollTo(0,0); }
       else if (window.location.hash === '#/noticias') { setActiveTab('noticias'); window.scrollTo(0,0); }
       else if (window.location.hash.startsWith('#/noticia/')) {setArticleSlug(decodeURIComponent(window.location.hash.split('/')[2]||''));setActiveTab('noticia');window.scrollTo(0,0);}
@@ -101,7 +103,8 @@ export default function App() {
     if (tab === 'ensino') setSelectedInstrument(null);
     if (tab === 'partituras') setStudioMode('hub');
     setActiveTab(tab);
-    if (tab === 'eventos') { if (window.location.hash !== '#/eventos') window.location.hash = '/eventos'; }
+    if (tab === 'salas') { if (window.location.hash !== '#/salas') window.location.hash = '/salas'; }
+    else if (tab === 'eventos') { if (window.location.hash !== '#/eventos') window.location.hash = '/eventos'; }
     else if (tab === 'noticias') { if(window.location.hash !== '#/noticias') window.location.hash='/noticias'; }
     else if (window.location.hash.startsWith('#/')) window.history.replaceState(null, '', window.location.pathname + window.location.search);
     scrollToTop();
@@ -183,10 +186,11 @@ export default function App() {
 
   return <div className="site-root">
     <Header activeTab={activeTab} activePublicSection={publicSection} onOpenPublicSection={openPublicSection} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
-    <main className={['inicio','institucional','eventos','noticias','noticia','admin'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
+    <main className={['inicio','institucional','eventos','noticias','noticia','admin','salas'].includes(activeTab) ? 'home-container' : `main-container ${activeTab === 'partituras' ? 'studio-host' : ''}`}>
       {activeTab === 'conta' && <AccountPage user={user} activeSection={accountSection} onUpdateProfile={handleUpdateProfile} onSignOut={handleSignOut} />}
       {activeTab === 'inicio' && <HomePage onNavigate={changeTab} onChooseInstrument={chooseInstrument} onOpenPublicSection={openPublicSection} onArticle={openArticle} />}
       {activeTab === 'institucional' && <PublicCoursePage activeSection={publicSection} onSelectSection={openPublicSection} onNavigate={changeTab} />}
+      {activeTab === 'salas' && <RoomReservationsPage user={user} onOpenAuth={openAuth} onNavigate={changeTab} />}
       {activeTab === 'eventos' && <EventsPage onNavigate={changeTab} />}
       {activeTab === 'noticias' && <NewsPage onNavigate={changeTab} onArticle={openArticle} />}
       {activeTab === 'noticia' && <NewsPage slug={articleSlug} onNavigate={changeTab} onArticle={openArticle} />}

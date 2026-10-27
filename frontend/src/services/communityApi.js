@@ -64,5 +64,17 @@ export const CommunityApi={
  saveScore:data=>apiRequest('/my/scores',{method:'POST',body:data,auth:true}).then(r=>r.score),
  deleteScore:id=>apiRequest(`/my/scores/${encodeURIComponent(id)}`,{method:'DELETE',auth:true}),
  getProgress:()=>apiRequest('/my/progress',{auth:true}).then(r=>r.progress),
- saveProgress:(id,completed)=>apiRequest(`/my/progress/${encodeURIComponent(id)}`,{method:'PUT',body:{completed},auth:true})
+ saveProgress:(id,completed)=>apiRequest(`/my/progress/${encodeURIComponent(id)}`,{method:'PUT',body:{completed},auth:true}),
+
+ // RF05-RF09: reservas de salas. A API Express valida a sessão Supabase em todas as rotas.
+ getRooms:()=>apiRequest('/rooms',{auth:true}).then(result=>result.rooms),
+ roomReservations:()=>apiRequest('/room-reservations',{auth:true}).then(result=>result.reservations),
+ roomBusySlots:(roomId,from,to)=>{
+  const params=new URLSearchParams({room_id:String(roomId),from:String(from),to:String(to)});
+  return apiRequest(`/rooms/occupancy?${params.toString()}`,{auth:true}).then(result=>result.slots);
+ },
+ requestRoom:data=>apiRequest('/room-reservations',{method:'POST',body:data,auth:true}).then(result=>result.reservation),
+ decideRoom:(id,status,reason='')=>apiRequest(`/room-reservations/${encodeURIComponent(id)}/status`,{method:'PATCH',body:{status,reason},auth:true}).then(result=>result.reservation),
+ createRoom:data=>apiRequest('/rooms',{method:'POST',body:data,auth:true}).then(result=>result.room),
+ updateRoom:(id,data)=>apiRequest(`/rooms/${encodeURIComponent(id)}`,{method:'PATCH',body:data,auth:true}).then(result=>result.room)
 };

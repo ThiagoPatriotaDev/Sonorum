@@ -1,7 +1,0 @@
-HOTFIX V7.1 - Autenticacao Supabase
-
-Substitua no seu projeto o arquivo frontend/src/services/communityApi.js pelo arquivo deste pacote.
-Reinicie o Vite. Em desenvolvimento, se o login falhar, o console mostrara apenas error.code e error.status do Supabase, nunca a senha.
-Se o code for email_not_confirmed: desligue Confirm Email em Supabase > Authentication > Sign In / Providers > Email e verifique Authentication > Users.
-Em producao, mensagens de erros permanecem genericas.
-O patch nao altera nenhuma configuracao remota do Supabase.

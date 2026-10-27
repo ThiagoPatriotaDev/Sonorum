@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import instrumentsRoutes from './routes/instruments.routes.js';
 import communityRoutes from './community/routes.js';
+import roomsRoutes from './rooms/routes.js';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/instruments', instrumentsRoutes);
 app.use('/api', communityRoutes);
+app.use('/api', roomsRoutes);
 
 export default app;
