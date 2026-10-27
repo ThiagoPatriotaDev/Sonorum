@@ -105,10 +105,10 @@ export default function ScoreEditorPage({ initialScore, onSaveScore, onBack, onN
     setSaved(false);
   };
   const score = { id, title: title.trim() || 'Partitura sem título', author, instrument, tempo: Number(tempo) || 100, meter, annotations, notes };
-  const save = () => {
+  const save = async () => {
     try {
-      const stored = onSaveScore(score);
-      if (stored?.id) { setId(stored.id); setSaved(true); setFeedback('Partitura salva neste navegador.'); }
+      const stored = await onSaveScore(score);
+      if (stored?.id) { setId(stored.id); setSaved(true); setFeedback('Partitura salva com sucesso.'); }
     } catch(error) { setFeedback(error.message || 'Não foi possível salvar.'); }
   };
   const guardedNavigation = (action) => {

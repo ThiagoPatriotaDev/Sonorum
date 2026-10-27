@@ -15,6 +15,7 @@ import './styles/editorial.css';
 import { PUBLIC_SECTIONS } from './data/publicCourse.js';
 import { StorageService } from './services/storageService.js';
 import { CommunityApi } from './services/communityApi.js';
+import {supabase} from './services/supabaseClient.js';
 import { INITIAL_INSTRUMENTS } from './data/instruments.js';
 
 export default function App() {
@@ -30,7 +31,8 @@ export default function App() {
   const [studioUnsaved, setStudioUnsaved] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState(null);
   const [user, setUser] = useState(null);
-  const [authVisible, setAuthVisible] = useState(false);
+  const [authVisible, setAuthVisible] = useState(initialHash==='#/redefinir-senha');
+  const [authMode, setAuthMode] = useState(initialHash==='#/redefinir-senha'?'reset':'login');
   const [authError, setAuthError] = useState('');
   const [videos, setVideos] = useState([]);
   const [videoError, setVideoError] = useState('');
@@ -38,6 +40,8 @@ export default function App() {
   const [articleSlug, setArticleSlug] = useState(() => initialHash.startsWith('#/noticia/') ? decodeURIComponent(initialHash.split('/')[2]||'') : '');
 
   useEffect(() => {
+    // Descartar o JWT HMAC legado; nunca reutilizá-lo com Supabase.
+    localStorage.removeItem('sonorum_access_token_v1');
     try {
       const preferences = JSON.parse(localStorage.getItem('sonorum_preferences_v4') || '{}');
       document.documentElement.classList.toggle('sonorum-less-motion', Boolean(preferences.reduceMotion));
@@ -46,17 +50,28 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    const token = CommunityApi.getToken();
-    if (token) CommunityApi.me(token).then(({ user: current }) => {
-      if (mounted) { setUser(current); setScores(StorageService.getScores(current.id)); }
-    }).catch(() => { CommunityApi.clearToken(); });
-    CommunityApi.videos().then((items) => {
-      if (mounted) { setVideos(items); setVideoError(''); }
-    }).catch(() => {
-      if (mounted) setVideoError('O servidor está offline. As publicações ficam disponíveis quando o backend estiver ativo.');
+    let mounted=true, revision=0;
+    const sync=async()=>{
+      const version=++revision;
+      try {
+        if (!supabase) {if(mounted){setUser(null);setScores(StorageService.getScores());}return;}
+        const {data:{session}}=await supabase.auth.getSession();
+        if(!session){if(mounted&&version===revision){setUser(null);setScores(StorageService.getScores());setCompletedLessons(StorageService.getProgress());setActiveTab(t=>['admin','conta'].includes(t)?'inicio':t);}return;}
+        const [profile,remoteScores,progress]=await Promise.all([CommunityApi.me(),CommunityApi.getScores(),CommunityApi.getProgress()]);
+        if(mounted&&version===revision){setUser(profile.user);setScores(remoteScores);setCompletedLessons(progress);}
+      } catch { if(mounted&&version===revision){setUser(null);setScores(StorageService.getScores());setActiveTab(t=>['admin','conta'].includes(t)?'inicio':t);} }
+    };
+    sync();
+    const subscription=supabase?.auth.onAuthStateChange((event)=>{
+      if(event==='PASSWORD_RECOVERY'){
+        setAuthMode('reset');setAuthVisible(true);setAuthError('');
+        return;
+      }
+      // Never await Supabase calls inside the onAuthStateChange callback.
+      window.setTimeout(sync,0);
     });
-    return () => { mounted = false; };
+    CommunityApi.videos().then(items=>{if(mounted){setVideos(items);setVideoError('');}}).catch(()=>{if(mounted)setVideoError('Servidor de videoaulas indisponível.');});
+    return()=>{mounted=false;revision++;subscription?.data?.subscription?.unsubscribe();};
   }, []);
 
   useEffect(() => {
@@ -102,7 +117,12 @@ export default function App() {
     setActiveTab('partituras');
     scrollToTop();
   };
-  const handleToggleLesson = (lessonId) => setCompletedLessons({ ...StorageService.toggleLessonProgress(lessonId) });
+  const handleToggleLesson = async lessonId => {
+    const next=!completedLessons[lessonId];
+    if(!user){setCompletedLessons(StorageService.toggleLessonProgress(lessonId));return;}
+    try{await CommunityApi.saveProgress(lessonId,next);setCompletedLessons(previous=>({...previous,[lessonId]:next}));}
+    catch{setVideoError('Não foi possível salvar o progresso. Tente novamente.');}
+  };
   const handlePracticeInEditor = (instrument, lesson) => openScore({
     id: null,
     title: `Exercício: ${lesson.title.replace(/^\d+\.\s*/, '')}`,
@@ -113,40 +133,53 @@ export default function App() {
     annotations: lesson.annotations || '',
     notes: structuredClone(lesson.practiceNotes)
   });
-  const handleSaveScore = (scorePayload) => {
-    const updated = StorageService.saveScore(scorePayload, user?.id || null);
-    setScores([...updated]);
-    return updated.find(score => score.id === scorePayload.id) || updated[0];
+  const handleSaveScore = async scorePayload => {
+    const stored=user ? await CommunityApi.saveScore(scorePayload) : StorageService.saveScore(scorePayload);
+    setScores(previous=>[stored,...previous.filter(x=>x.id!==stored.id)]);
+    return stored;
   };
-  const handleDeleteScore = (id) => setScores([...StorageService.deleteScore(id, user?.id || null)]);
+  const handleDeleteScore = async id => {
+    try {if(user)await CommunityApi.deleteScore(id); else StorageService.deleteScore(id);
+      setScores(previous=>previous.filter(score=>score.id!==id));}
+    catch {window.alert('Não foi possível excluir a partitura.');}
+  };
   const handleAuth = async (mode, credentials) => {
+    setAuthError('');
     try {
-      const result = mode === 'login' ? await CommunityApi.login(credentials) : await CommunityApi.register(credentials);
-      CommunityApi.saveToken(result.token);
+      if(mode==='recover'){return await CommunityApi.recover(credentials);}
+      if(mode==='reset'){
+        const answer=await CommunityApi.changePassword(credentials);
+        await CommunityApi.signOut();
+        setAuthMode('login');setAuthVisible(false);setUser(null);
+        if(window.location.hash==='#/redefinir-senha')window.history.replaceState(null,'',window.location.pathname+window.location.search);
+        return answer;
+      }
+      const result=mode==='login'?await CommunityApi.login(credentials):await CommunityApi.register(credentials);
       setUser(result.user);
-      setScores(StorageService.getScores(result.user.id));
-      setAuthVisible(false);
-      setAuthError('');
-    } catch (error) { setAuthError(error.message); throw error; }
+      const [cloudScores,cloudProgress]=await Promise.all([CommunityApi.getScores(),CommunityApi.getProgress()]);
+      setScores(cloudScores);setCompletedLessons(cloudProgress);
+      setAuthVisible(false);setAuthError('');return result;
+    } catch(error){setAuthError(error.message||'Não foi possível autenticar.');throw error;}
   };
   const handleOpenAccount = (section = 'perfil') => { if(section==='admin'){openAdmin();return;} setAccountSection(section); setActiveTab('conta'); scrollToTop(); };
   const handleUpdateProfile = async (name) => {
-    const result = await CommunityApi.updateMe({ name }, CommunityApi.getToken());
+    const result = await CommunityApi.updateMe({ name });
     setUser(result.user);
     return result.user;
   };
-  const handleSignOut = () => {
-    CommunityApi.clearToken(); setUser(null); setScores(StorageService.getScores()); setAuthError(''); changeTab('inicio');
+  const handleSignOut = async () => {
+    try{await CommunityApi.signOut();setUser(null);setScores(StorageService.getScores());setCompletedLessons(StorageService.getProgress());setAuthError('');changeTab('inicio');}
+    catch{window.alert('Não foi possível encerrar a sessão. Tente novamente.');}
   };
   const handlePublish = async (input) => {
-    try { setVideoError(''); const video = await CommunityApi.publish(input, CommunityApi.getToken()); setVideos(before => [video, ...before]); }
+    try { setVideoError(''); const video = await CommunityApi.publish(input); setVideos(before => [video, ...before]); }
     catch (error) { setVideoError(error.message); throw error; }
   };
   const handleDeleteVideo = async (id) => {
-    try { await CommunityApi.remove(id, CommunityApi.getToken()); setVideos(before => before.filter(item => item.id !== id)); }
+    try { await CommunityApi.remove(id); setVideos(before => before.filter(item => item.id !== id)); }
     catch (error) { setVideoError(error.message); }
   };
-  const openAuth = () => { setAuthError(''); setAuthVisible(true); };
+  const openAuth = () => { setAuthMode('login');setAuthError('');setAuthVisible(true); };
 
   return <div className="site-root">
     <Header activeTab={activeTab} activePublicSection={publicSection} onOpenPublicSection={openPublicSection} onChangeTab={changeTab} savedCount={scores.length} user={user} onOpenAuth={openAuth} onSignOut={handleSignOut} onOpenAccount={handleOpenAccount} />
@@ -162,6 +195,6 @@ export default function App() {
       {activeTab === 'comunidade' && <><CommunityPage videos={videos} user={user} onOpenAuth={openAuth} onPublish={handlePublish} onDelete={handleDeleteVideo} onNavigateEvents={()=>changeTab('eventos')} error={videoError} onClearError={()=>setVideoError('')} />{videoError && <p className="server-warning" role="status">{videoError}</p>}</>}
       {activeTab === 'partituras' && (studioMode === 'hub' ? <ScoreWorkspacePage scores={scores} user={user} onOpenScore={openScore} onNewScore={()=>openScore(null)} onDeleteScore={handleDeleteScore} /> : <ScoreEditorPage key={editorSession} initialScore={editingScore} onSaveScore={handleSaveScore} onDirtyChange={setStudioUnsaved} onBack={()=>{setStudioUnsaved(false);setStudioMode('hub');scrollToTop();}} onNewScore={()=>openScore(null)} />)}
     </main>
-    {authVisible && <AuthModal onClose={()=>setAuthVisible(false)} onSubmit={handleAuth} error={authError} onClearError={()=>setAuthError('')} />}
+    {authVisible && <AuthModal initialMode={authMode} onClose={()=>setAuthVisible(false)} onSubmit={handleAuth} error={authError} onClearError={()=>setAuthError('')} />}
   </div>;
 }

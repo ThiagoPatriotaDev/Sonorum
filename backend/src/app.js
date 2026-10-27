@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import instrumentsRoutes from './routes/instruments.routes.js';
-import scoresRoutes from './routes/scores.routes.js';
 import communityRoutes from './community/routes.js';
 
 const app = express();
@@ -16,7 +15,6 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/instruments', instrumentsRoutes);
-app.use('/api/scores', scoresRoutes);
 app.use('/api', communityRoutes);
 
 export default app;

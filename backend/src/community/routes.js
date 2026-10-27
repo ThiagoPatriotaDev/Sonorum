@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import { bootstrapDevAdmin, login, register, requireUser, requireRoles, updateProfile } from './auth.js';
-import { listVideos, publishVideo, deleteVideo } from './videos.js';
-import { listPublished, getPublished, listNews, saveNews, listUsers, changeRole } from './news.js';
+import { requireUser,requireRoles,updateProfile } from './auth.js';
+import { listVideos,publishVideo,deleteVideo } from './videos.js';
+import { listPublished,getPublished,listNews,saveNews,listUsers,changeRole } from './news.js';
+import { listMyScores,saveMyScore,deleteMyScore,listMyProgress,setMyProgress } from './userData.js';
 const router=Router();
-bootstrapDevAdmin();
-router.post('/auth/register',register);
-router.post('/auth/login',login);
+// Auth: cadastro, login, logout e reset são feitos APENAS com Supabase Auth no frontend.
 router.get('/auth/me',requireUser,(req,res)=>res.json({user:req.user}));
 router.patch('/auth/me',requireUser,updateProfile);
 router.get('/videos',listVideos);
@@ -18,4 +17,9 @@ router.post('/admin/news',requireUser,requireRoles('admin','coordinator','teache
 router.patch('/admin/news/:id',requireUser,requireRoles('admin','coordinator','teacher'),saveNews);
 router.get('/admin/users',requireUser,requireRoles('admin'),listUsers);
 router.patch('/admin/users/:id/role',requireUser,requireRoles('admin'),changeRole);
+router.get('/my/scores',requireUser,listMyScores);
+router.post('/my/scores',requireUser,saveMyScore);
+router.delete('/my/scores/:id',requireUser,deleteMyScore);
+router.get('/my/progress',requireUser,listMyProgress);
+router.put('/my/progress/:id',requireUser,setMyProgress);
 export default router;
