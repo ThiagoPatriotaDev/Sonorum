@@ -1294,3 +1294,12 @@ input:focus,select:focus,textarea:focus { outline: none; border-color: #b8725b; 
 .community-event-quicklink { background:transparent; border:0; border-bottom:1px solid rgba(245,184,151,.65); color:#f5c5a9; padding:11px 2px; display:inline-flex; align-items:center; gap:20px; font-size:12px; font-weight:750; }
 .community-event-quicklink:hover { color:white; }
 .account-chip[aria-expanded="true"] .account-chevron.nav-discover-icon { transform:rotate(0deg); }
+
+/* V9: comunidade como hub, com todas as atividades em um único mega-menu. */
+@media (min-width:961px) {
+  .community-mega { max-height:calc(100dvh - 90px); overflow-y:auto; overscroll-behavior:contain; }
+  .community-mega .public-mega-link { padding-block:11px; }
+  .community-mega .public-mega-link:first-child { padding-top:8px; }
+  .community-mega .public-mega-preview { min-height:290px; }
+}
+@media (max-width:960px) { .community-mega { max-height:none; overflow:visible; } }

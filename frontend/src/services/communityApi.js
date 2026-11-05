@@ -76,5 +76,13 @@ export const CommunityApi={
  requestRoom:data=>apiRequest('/room-reservations',{method:'POST',body:data,auth:true}).then(result=>result.reservation),
  decideRoom:(id,status,reason='')=>apiRequest(`/room-reservations/${encodeURIComponent(id)}/status`,{method:'PATCH',body:{status,reason},auth:true}).then(result=>result.reservation),
  createRoom:data=>apiRequest('/rooms',{method:'POST',body:data,auth:true}).then(result=>result.room),
- updateRoom:(id,data)=>apiRequest(`/rooms/${encodeURIComponent(id)}`,{method:'PATCH',body:data,auth:true}).then(result=>result.room)
+ updateRoom:(id,data)=>apiRequest(`/rooms/${encodeURIComponent(id)}`,{method:'PATCH',body:data,auth:true}).then(result=>result.room),
+ // RF10-RF12: acervo e empréstimos patrimoniais.
+ getInstrumentAssets:()=>apiRequest('/instrument-assets',{auth:true}).then(r=>r.instruments),
+ getInstrumentBusy:()=>apiRequest('/instrument-assets/availability',{auth:true}).then(r=>r.busy_ids),
+ getInstrumentLoans:(page=0,status='')=>apiRequest(`/instrument-loans?page=${Number(page)||0}${status?`&status=${encodeURIComponent(status)}`:''}`,{auth:true}),
+ createInstrumentAsset:data=>apiRequest('/instrument-assets',{method:'POST',body:data,auth:true}).then(r=>r.instrument),
+ updateInstrumentAsset:(id,data)=>apiRequest(`/instrument-assets/${encodeURIComponent(id)}`,{method:'PATCH',body:data,auth:true}).then(r=>r.instrument),
+ requestInstrumentLoan:data=>apiRequest('/instrument-loans',{method:'POST',body:data,auth:true}).then(r=>r.loan),
+ changeInstrumentLoan:(id,data)=>apiRequest(`/instrument-loans/${encodeURIComponent(id)}/status`,{method:'PATCH',body:data,auth:true}).then(r=>r.loan)
 };

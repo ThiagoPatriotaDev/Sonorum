@@ -21,8 +21,11 @@ export default function Header({ activeTab, activePublicSection, onChangeTab, on
   const hoverCloseTimerRef = useRef(null);
   const preview = PUBLIC_SECTIONS.find(s => s.id === publicPreview) || PUBLIC_SECTIONS[0];
   const communityEntries = [
-    { id: 'videos', number: '01', label: 'Mural musical', short: 'Videoaulas e experiências compartilhadas', symbol: '♫', kicker: 'Vozes da comunidade', tab: 'comunidade' },
-    { id: 'eventos', number: '02', label: 'Agenda de eventos', short: 'Apresentações, projetos e encontros', symbol: '♬', kicker: 'Programação do curso', tab: 'eventos' }
+    { id: 'videos', number: '01', label: 'Mural musical', short: 'Publicações e videoaulas compartilhadas', symbol: '♫', kicker: 'Vozes da comunidade', tab: 'comunidade' },
+    { id: 'eventos', number: '02', label: 'Agenda de eventos', short: 'Apresentações e encontros do curso', symbol: '♬', kicker: 'Programação musical', tab: 'eventos' },
+    { id: 'salas', number: '03', label: 'Reserva de salas', short: 'Espaços para estudo e ensaio', symbol: '⌂', kicker: 'Seu horário de estudo', tab: 'salas' },
+    { id: 'acervo', number: '04', label: 'Acervo e empréstimos', short: 'Instrumentos, solicitações e histórico', symbol: '𝄞', kicker: 'Patrimônio do curso', tab: 'acervo' },
+    { id: 'ensino', number: '05', label: 'Explorar aulas', short: 'Prática, materiais e aprendizado', symbol: '♩', kicker: 'Aprenda em movimento', tab: 'ensino' }
   ];
   const communityFeatured = communityEntries.find(item => item.id === communityPreview) || communityEntries[0];
   const closeMenus = () => { cancelHoverClose(); setPublicOpen(false); setCommunityOpen(false); setAccountOpen(false); };
@@ -95,14 +98,13 @@ export default function Header({ activeTab, activePublicSection, onChangeTab, on
           <div className="public-mega-preview" aria-hidden="true"><div className="public-preview-halo"/><span className="public-preview-index">{preview.number} / 04</span><span className="public-preview-symbol" key={preview.id}>{preview.symbol}</span><span className="public-preview-title">{preview.label}</span><span className="public-preview-subtitle">{preview.kicker}</span><svg viewBox="0 0 180 30" className="public-preview-wave" fill="none"><path d="M0 14C16 -2 26 26 42 13S72 0 88 14 118 28 132 13 158 0 180 14" stroke="#e3b28f" strokeWidth="1.2"/></svg></div>
         </div>}
       </div>
-      {LINKS.filter(link => link.id === 'ensino').map(link => <button key={link.id} className={`nav-tab ${activeTab === link.id ? 'active' : ''}`} onClick={() => handleNavigate(link.id)} aria-current={activeTab === link.id ? 'page' : undefined}>{link.label}</button>)}
       <div className={`public-nav-group community-nav-group ${communityOpen ? 'is-open' : ''}`} ref={communityRef}
         onMouseEnter={() => hoverMenu('community')}
         onMouseLeave={() => scheduleHoverClose('community')}
         onFocusCapture={cancelHoverClose}
         onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) { cancelHoverClose(); setCommunityOpen(false); } }}>
         <div className="public-home-trigger community-home-trigger">
-          <button className={`nav-tab nav-tab-home ${['comunidade','eventos'].includes(activeTab) ? 'active' : ''}`}
+          <button className={`nav-tab nav-tab-home ${['comunidade','eventos','salas','acervo','ensino'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => handleNavigate('comunidade')}
             aria-current={activeTab === 'comunidade' ? 'page' : undefined}>Comunidade</button>
           <button ref={communityToggleRef} className="nav-discover-toggle" aria-label="Abrir seções da comunidade"
@@ -116,7 +118,7 @@ export default function Header({ activeTab, activePublicSection, onChangeTab, on
           <div className="public-mega-intro">
             <span className="public-mega-eyebrow">SONORUM · EM COMUNIDADE</span>
             <h2>O som ganha vida <em>quando circula.</em></h2>
-            <p>Aprenda com outras pessoas, encontre apresentações e descubra as atividades que movimentam o curso.</p>
+            <p>Um espaço para aprender, ensaiar e participar. Aulas, reservas e instrumentos, reunidos num só percurso.</p>
             <button className="public-mega-main-cta" onClick={() => handleNavigate('eventos')}>Explorar a agenda <span>↗</span></button>
           </div>
           <div className="public-mega-links" aria-label="Áreas da comunidade">
@@ -128,7 +130,7 @@ export default function Header({ activeTab, activePublicSection, onChangeTab, on
               <span className="public-mega-link-copy"><strong>{item.label}</strong><small>{item.short}</small></span>
               <span className="public-mega-link-arrow" aria-hidden="true">↗</span>
             </button>)}
-            <div className="community-future"><span className="public-mega-num">03</span><span><strong>Portfólio artístico</strong><small>Espaço reservado para a próxima etapa</small></span><span className="community-future-label">EM BREVE</span></div>
+            <div className="community-future"><span className="public-mega-num">06</span><span><strong>Portfólio artístico</strong><small>Espaço reservado para a próxima etapa</small></span><span className="community-future-label">EM BREVE</span></div>
           </div>
           <div className="public-mega-preview" aria-hidden="true">
             <div className="public-preview-halo"/><span className="public-preview-index">SONORUM / COMUNIDADE</span>
@@ -139,7 +141,6 @@ export default function Header({ activeTab, activePublicSection, onChangeTab, on
           </div>
         </div>}
       </div>
-      <button className={`nav-tab ${activeTab === 'salas' ? 'active' : ''}`} onClick={() => handleNavigate('salas')} aria-current={activeTab === 'salas' ? 'page' : undefined}>Salas</button>
       {LINKS.filter(link => link.id === 'partituras').map(link => <button key={link.id} className={`nav-tab ${activeTab === link.id ? 'active' : ''}`} onClick={() => handleNavigate(link.id)} aria-current={activeTab === link.id ? 'page' : undefined}>{link.label}{savedCount > 0 && user && <span className="badge-count">{savedCount}</span>}</button>)}
       <div className="mobile-account-link">{user ? <><button className="nav-tab" onClick={() => goAccount('perfil')}>Meu perfil</button><button className="nav-tab" onClick={() => goAccount('configuracoes')}>Configurações</button>{['admin','coordinator','teacher'].includes(user.role)&&<button className="nav-tab" onClick={() => goAccount('admin')}>Painel editorial</button>}<button className="nav-tab" onClick={() => { setMenuOpen(false); onSignOut(); }}>Sair da conta</button></> : <button className="nav-tab" onClick={() => {setMenuOpen(false);onOpenAuth();}}>Entrar / cadastrar</button>}</div>
     </nav>
