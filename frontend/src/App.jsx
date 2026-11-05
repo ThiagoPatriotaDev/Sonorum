@@ -14,6 +14,7 @@ import AdminConsolePage from './pages/AdminConsolePage.jsx';
 import RoomReservationsPage from './pages/RoomReservationsPage.jsx';
 import InstrumentLoansPage from './pages/InstrumentLoansPage.jsx';
 import './styles/editorial.css';
+import './styles/institutional.css';
 import { PUBLIC_SECTIONS } from './data/publicCourse.js';
 import { StorageService } from './services/storageService.js';
 import { CommunityApi } from './services/communityApi.js';

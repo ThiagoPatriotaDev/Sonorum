@@ -4,6 +4,7 @@ import instrumentsRoutes from './routes/instruments.routes.js';
 import communityRoutes from './community/routes.js';
 import roomsRoutes from './rooms/routes.js';
 import instrumentLoansRoutes from './instrumentLoans/routes.js';
+import institutionalRoutes from './course/routes.js';
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.use('/api/instruments', instrumentsRoutes);
 app.use('/api', communityRoutes);
 app.use('/api', roomsRoutes);
 app.use('/api', instrumentLoansRoutes);
+app.use('/api', institutionalRoutes);
 
 export default app;
